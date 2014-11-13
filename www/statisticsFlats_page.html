@@ -6,7 +6,7 @@
         <meta name="format-detection" content="telephone=no" />
         <meta name="msapplication-tap-highlight" content="no" />
         <meta name="viewport" content="user-scalable=yes, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
-        <title>RTU APP (STATISTICS WORKERS)</title>
+        <title>RTU APP (STATISTICS FLATS)</title>
 		
 		<link rel="stylesheet" type="text/css" href="css/themes/default/jquery.mobile-1.4.3.min.css"/>
 		<link rel="stylesheet" type="text/css" href="css/main.css" />
@@ -34,8 +34,10 @@
 			
 			<script type = "text/javascript">
 			
-			var userList;
+			var flatsList;
+			var customerList;
 			var purchList;
+			var streetsList;
 			
 			function init()
 			{
@@ -73,24 +75,24 @@
 			
 			function loadAll()
 			{
-				//Ielade visu
 				
-				$("#loading").empty().append('Ielade darbiniekus...');
+				//Ielade visu
+				$("#loading").empty().append('Ielade dzivoklus...');
 				
 				var cloud = new Cloud();
-				cloud.findAll("users",usersSuccess,usersFailed);
+				cloud.findAll("flats",flatsSuccess,flatsFailed);
 			}
 			
-			function usersSuccess(rez)
+			function flatsSuccess(rez)
 			{
-				$("#loading").empty().append('Ielade pirkumus..');
-				userList = rez;
+				flatsList = rez;
 				
+				$("#loading").empty().append('Ielade pirkumus...');
 				var cloud = new Cloud();
 				cloud.findAll("purchases",purchSuccess,purchFailed);
 			}
 			
-			function usersFailed()
+			function flatsFailed()
 			{
 				alert("Neizdevās nodibināt savienojumu ar internetu!");
 				$("#loading").empty();
@@ -99,9 +101,11 @@
 			
 			function purchSuccess(rez)
 			{
-				
+
 				purchList = rez;
-				createTable();
+				$("#loading").empty().append('Ielade klientus...');
+				var cloud = new Cloud();
+				cloud.findAll("customers",customersSuccess,customersFailed);
 			}
 			
 			function purchFailed()
@@ -111,44 +115,96 @@
 				addReload();
 			}
 			
+			function customersSuccess(rez)
+			{
+				customerList = rez;
+				streetsList = [];
+				
+				//Apvieno customerus un flats
+				
+				for (var i = 0 ;i<customerList.length;i++)
+				{
+					var val;
+					for (var j=0;j<flatsList.length;j++)
+					{
+						if (flatsList[j]._id.$oid === customerList[i].flat_id)
+						{
+							//alert("FLAT: "+flatsList[j].street_name+ " customer "+customerList[i]._id.$oid);
+							val =  flatsList[j].street_name+"/"+customerList[i]._id.$oid;
+							streetsList.push(val);
+							
+						}
+					}
+				}
+				
+				$("#loading").empty();
+				
+				//Create Table
+				createTable();
+			}
+			
+			function customersFailed()
+			{
+				alert("Neizdevās nodibināt savienojumu ar internetu!");
+				$("#loading").empty();
+				addReload();
+			}
+			
+			
+			
 			function createTable()
 			{
 				//Creating Table
 				$("#loading").empty();
 				
-				var response = userList;
+				var response = streetsList;
 				
 				var htmlstring = "";
-				for (i=0; i<response.length;i++)
+					
+					
+				for (var i=0; i<response.length;i++)
 				{
 					var summ = 0;
 					var price = 0;
 					var count = 0;
-					for (j=0;j<purchList.length;j++)
+					
+					
+					var street_name = response[i].split("/")[0];
+					var cust_id = response[i].split("/")[1];
+					//alert(street_name+" "+cust_id);
+					
+					
+					
+					for ( var j=0;j<purchList.length;j++)
 					{
-						if (response[i].uname == purchList[j].uname)
+						if (cust_id == purchList[j].cust_id)
 						{
-							summ += parseFloat(purchList[j].amount);
-							price += parseFloat(purchList[j].price);
+							//alert("Purchase: "+ purchList[j].product);
+							summ+=parseFloat(purchList[j].amount);
+							price+=parseFloat(purchList[j].price);
 							count++;
 						}
+						
 					}
 					
-				
+
 					
-					{
-						htmlstring += '<tr>'+
-							'<td>'+response[i].uname+'</td>'+
-							'<td>'+count+'</td>'+
-							'<td>'+summ+'</td>'+
-							'<td>'+price+'</td>'
-						+'</tr>';
-					}
+					htmlstring += '<tr>'+
+						'<td>'+street_name+'</td>'+
+						'<td>'+count+'</td>'+
+						'<td>'+summ+'</td>'+
+						'<td>'+price+'</td>'
+					+'</tr>';
+					
+
 				}
+				
 				//alert(htmlstring);
+				
 				
 				$("#table_cont").empty().append(htmlstring);
 				$("#table").table("refresh");
+				
 				
 			}
 			
@@ -163,18 +219,22 @@
 		
 		
 			<div data-role = "header" data-theme="b" class="center-wrapper" data-position="fixed">
-				STATISTIKA DARBINIEKI
+				STATISTIKA DZĪVOKĻI
 			</div>
 			<div data-role="content" id="cont">
 				
 				<div id="loading">
+				
 				</div>
-				<br>
+				
+				<div id="reload">
+				</div>
+				
 				
 				<div id="table" data-role="table" data-mode="columntoggle" class = "ui-responsive ui-shadow table-stroke table-stripe">
 				<table id="myTable">
 					<thead>
-						<th data-priority>Darbinieks</th>
+						<th data-priority>Dzīvoklis</th>
 						<th data-priority="1">Pard. sk</th>
 						<th data-priority="2">Daudz. kg</th>
 						<th data-priority="3">Nauda. EU</th>
