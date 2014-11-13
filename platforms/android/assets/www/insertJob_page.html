@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="msapplication-tap-highlight" content="no" />
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+        <title>RTU APP (INSERT_JOB)</title>
+		
+		<link rel="stylesheet" type="text/css" href="css/themes/default/jquery.mobile-1.4.3.min.css"/>
+		<link rel="stylesheet" type="text/css" href="css/main.css" />
+		
+		<script type="text/javascript" src="js/jquery.js"></script>
+		<script type="text/javascript" src="js/jquery.mobile-1.4.3.js"></script>
+		<script type="text/javascript" src="cordova.js"></script>
+		<script type="text/javascript" src="js/App42-all-2.7.2.min.js"></script>
+		<script type="text/javascript" src="js/sha1.js"></script>
+		<script type="text/javascript" src="js/cloud.js"></script>
+		
+		<script type="text/javascript">
+			$(document).on("pagecreate","#insertUser_page",function(){
+				document.addEventListener("deviceready",onDeviceReady,false);
+			});
+		</script>
+		
+    </head>
+    <body onload = "init()">
+        <div data-role ="page" id = "insertUser_page" >
+			
+			
+			
+			<script type = "text/javascript">
+			var uid;
+			
+			function init()
+			{
+				//Pamet Tuksu
+				//document.addEventListener("deviceready",onDeviceReady,false);
+				
+			}
+			
+			$(":mobile-pagecontainer").on("pagecontainerchange", function(event, ui)
+				{
+					//alert("Page container change (Login Page)!");
+					document.addEventListener("deviceready",onDeviceReady,false);
+					
+					$(":mobile-pagecontainer").unbind();
+				}
+			);
+			
+			function onDeviceReady()
+			{
+				//Device ready
+				//alert("LOGIN");
+				
+				var url = $.mobile.activePage[0].baseURI;
+				
+				uid = url.split("?")[1];
+				uid = uid.replace("uid=","");
+				
+				//alert(uid);
+				
+				$("[name='house-from']").textinput('disable');	
+				$("[name='house-until']").textinput('disable');	
+				$("[name='flat-from']").textinput('disable');	
+				$("[name='flat-until']").textinput('disable');	
+				
+				$("input[type='radio']").bind( "change", typeChange);
+			}
+			
+			function typeChange()
+			{
+				//alert("Changed!");
+				
+				var checked = $("#insert_form input[type='radio']:checked").val();
+				//alert(checked);
+				
+				if (checked == "choice-1")
+				{
+					$("[name='house-from']").textinput('disable');	
+					$("[name='house-until']").textinput('disable');	
+					$("[name='flat-from']").textinput('disable');	
+					$("[name='flat-until']").textinput('disable');	
+				}
+				else if (checked == "choice-2")
+				{
+					$("[name='house-from']").textinput('enable');	
+					$("[name='house-until']").textinput('enable');	
+					$("[name='flat-from']").textinput('disable');	
+					$("[name='flat-until']").textinput('disable');	
+				}
+				else if (checked == "choice-3")
+				{
+					$("[name='house-from']").textinput('enable');	
+					$("[name='house-until']").textinput('disable');	
+					$("[name='flat-from']").textinput('enable');	
+					$("[name='flat-until']").textinput('enable');
+				}
+			}
+			
+			
+			function submitForm()
+			{
+				var street = $("[name='street']").val();
+				
+				var houseFrom;
+				var houseUntil;
+				var flatFrom;
+				var flatUntil;
+				
+				var checked = $("#insert_form input[type='radio']:checked").val();
+				if (checked == "choice-1")
+				{
+					houseFrom = "NULL";
+					houseUntil = "NULL";
+					flatFrom = "NULL";
+					flatUntil = "NULL";
+				}
+				else if (checked == "choice-2")
+				{
+					houseFrom = $("[name='house-from']").val();
+					houseUntil = $("[name='house-until']").val();
+					flatFrom = "NULL";
+					flatUntil = "NULL";
+				}
+				else if (checked == "choice-3")
+				{
+					houseFrom = $("[name='house-from']").val();
+					houseUntil = "NULL";
+					flatFrom = $("[name='flat-from']").val();
+					flatUntil = $("[name='flat-until']").val();
+				}
+				
+				var json = '{"uid":"'+uid+'","street":"'+street+'","hFrom":"'+houseFrom+'","hUntil":"'+houseUntil+'","fFrom":"'+flatFrom+'","fUntil":"'+flatUntil+'"}';
+				alert(json);
+				var cloud = new Cloud();
+				$("#subm").button('disable');					
+				$("#loading").append('Loading...');
+				cloud.insertNew("jobs", json, insertSuccess,insertFail);
+				
+				return false;
+			}
+			
+			function insertSuccess()
+			{
+				alert("Success!");
+				$("#loading").empty();
+				
+				$("#insert_form").empty();
+				$("#back").append('<br><a href="#" id="back_b" data-rel="back" class="ui-btn">Atpakaļ</a>');
+				$('#back_b').buttonMarkup({ icon: "back" });
+			}
+			
+			function insertFail()
+			{
+				alert("Fail!");
+				$("#loading").empty();
+			}
+			
+			
+			
+			
+			
+		</script>
+		
+		
+			<div data-role = "header" data-theme="b" class="center-wrapper" data-position="fixed">
+				JAUNS DARBS
+			</div>
+			<div data-role="content" id="cont">
+				<div id="loading">
+				
+				</div>
+				<form method = "POST" id="insert_form"  onSubmit="return submitForm()">
+					<input name="street" type="text" placeholder="Iela">
+					
+						
+					<fieldset data-role="controlgroup">
+						<legend>Darba tips:</legend>
+							<input type="radio" name="radio-choice" id="radio-choice-1" value="choice-1" checked="checked" />
+							<label for="radio-choice-1">Visa iela</label>
+
+							<input type="radio" name="radio-choice" id="radio-choice-2" value="choice-2"  />
+							<label for="radio-choice-2">Daļa no mājām</label>
+
+							<input type="radio" name="radio-choice" id="radio-choice-3" value="choice-3"  />
+							<label for="radio-choice-3">Daļa no vienas mājās dzīvokļiem</label>
+					</fieldset>
+					<fieldset data-role="numb">
+						<input name="house-from" type="number" placeholder="Māja - no">
+						<input name="house-until" type="number" placeholder="Māja - līdz">
+						<input name="flat-from" type="number" placeholder="Dzīvoklis - no">
+						<input name="flat-until" type="number" placeholder="Dzīvoklis - līdz">
+					</fieldset>
+					
+					<input type="submit" id = "subm" value="submit">
+					
+				</form>
+				<br>
+				
+				<div id="back">
+				
+				</div>
+				
+				<ul data-role="listview" id = "list" data-inset="true">
+					
+				</ul>	
+			</div>
+			<div data-role="footer" data-theme="b" class="center-wrapper" data-position="fixed">
+				MADE BY KRISTAPS
+			</div>
+		</div>
+    </body>
+</html>

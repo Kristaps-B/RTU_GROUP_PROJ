@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Pierakstîðanâs Testçðana (QUnit tests)</title>
+<link rel="stylesheet" href="css/qunit.css">
+</head>
+<body>
+<div id="qunit"></div>
+<div id="qunit-fixture"></div>
+<script type="text/javascript" src="js/App42-all-2.7.2.min.js"></script>
+<script src="js/qunit.js"></script>
+<script  src="js/sha1.js"></script>
+<script src="js/cloud.js"></script>
+<script src="js/login.js"></script>
+
+
+<script type = "text/javascript">
+	//Ðeit sâkas testçðana
+	
+	
+	//Pierakstisanas izdevas
+	QUnit.asyncTest( "Pierakstîðanâs tests(Pareizi pierakstisanas dati)",  function( assert ) {
+		//assert.ok( login() == "AAAA", "Passed!" );
+		//expect(1);
+		login("boss","superboss",function()
+		{
+			//alert("Success");
+			assert.ok(true,"Pierakstisanas izdevas!")
+			QUnit.start();
+		},
+		function()
+		{
+			//alert("Failed");
+			assert.ok(false,"Pierakstisanas neizdevas!")
+			QUnit.start();
+		});
+	});
+	
+	//Pierakstisanas neizdevas
+	QUnit.asyncTest( "Pierakstîðanâs tests(Nepareizi pierakstisanas dati)",  function( assert ) {
+		//assert.ok( login() == "AAAA", "Passed!" );
+		//expect(1);
+		login("bosss","superboss",function()
+		{
+			//alert("Success");
+			assert.ok(false,"Pierakstija neeksistejoðu lietotâju!")
+			QUnit.start();
+		},
+		function()
+		{
+			//alert("Failed");
+			assert.ok(true,"Nepierakstijâ neeksistejoðu lietotâju!")
+			QUnit.start();
+		});
+	});
+	
+	//Pierakstisanas pârâk îss lietotâjvârds
+	QUnit.asyncTest( "Pierakstîðanâs tests(Pârâk îss lietotâjvârds)",  function( assert ) {
+		//assert.ok( login() == "AAAA", "Passed!" );
+		//expect(1);
+		login("b","superboss",function()
+		{
+			//alert("Success");
+			assert.ok(false,"Pieòçma pârâk îsu lietotâjvârdu!")
+			QUnit.start();
+		},
+		function()
+		{
+			//alert("Failed");
+			assert.ok(true,"Nepieòçma pârâk îsu lietotâjvârdu!")
+			QUnit.start();
+		});
+	});
+	
+	//Pierakstisanas pârâk garðs lietotâjvârds
+	QUnit.asyncTest( "Pierakstîðanâs tests(Pârâk garðs lietotâjvârds)",  function( assert ) {
+		//assert.ok( login() == "AAAA", "Passed!" );
+		//expect(1);
+		login("bsafsdfdsfdsfdsfdsfsdfsdfdsfsffds","superboss",function()
+		{
+			//alert("Success");
+			assert.ok(false,"Pieòçma pârâk garu lietotâjvârdu!")
+			QUnit.start();
+		},
+		function()
+		{
+			//alert("Failed");
+			assert.ok(true,"Nepieòçma pârâk garu lietotâjvârdu!")
+			QUnit.start();
+		});
+	});
+	
+	//Pierakstisanas pârâk îsa parole
+	QUnit.asyncTest( "Pierakstîðanâs tests(Pârâk îsa parole)",  function( assert ) {
+		//assert.ok( login() == "AAAA", "Passed!" );
+		//expect(1);
+		login("boss","oss",function()
+		{
+			//alert("Success");
+			assert.ok(false,"Pieòçma pârâk îsu paroli!")
+			QUnit.start();
+		},
+		function()
+		{
+			//alert("Failed");
+			assert.ok(true,"Nepieòçma pârâk îsu paroli!")
+			QUnit.start();
+		});
+	});
+	
+	//Pierakstisanas pârâk gara parole
+	QUnit.asyncTest( "Pierakstîðanâs tests(Pârâk gara parole)",  function( assert ) {
+		//assert.ok( login() == "AAAA", "Passed!" );
+		//expect(1);
+		login("bsa","superbossasdfsdfasdfds",function()
+		{
+			//alert("Success");
+			assert.ok(false,"Pieòçma pârâk garu paroli!")
+			QUnit.start();
+		},
+		function()
+		{
+			//alert("Failed");
+			assert.ok(true,"Nepieòçma pârâk gar paroli!")
+			QUnit.start();
+		});
+	});
+	
+</script>
+
+</body>
+</html>

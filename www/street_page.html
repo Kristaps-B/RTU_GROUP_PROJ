@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="msapplication-tap-highlight" content="no" />
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+        <title>RTU APP (STREET)</title>
+		
+		<link rel="stylesheet" type="text/css" href="css/themes/default/jquery.mobile-1.4.3.min.css"/>
+		<link rel="stylesheet" type="text/css" href="css/main.css" />
+		
+		<script type="text/javascript" src="js/jquery.js"></script>
+		<script type="text/javascript" src="js/jquery.mobile-1.4.3.js"></script>
+		<script type="text/javascript" src="cordova.js"></script>
+		<script type="text/javascript" src="js/cloud.js"></script>
+		
+		<script type="text/javascript">
+			$(document).on("pagecreate","#jobs_page",function(){
+				document.addEventListener("deviceready",onDeviceReady,false);
+				writeAll();
+			});
+		</script>
+		
+    </head>
+    <body onload = "init()">
+        <div data-role ="page" id = "street_page" >
+			
+			<script type = "text/javascript">
+			
+			var street_id;
+			var street_name;
+			
+			var h_n;
+			var h_u;
+			var f_n;
+			var f_u;
+			
+			var customerList;
+			var commentsList;
+			
+			
+			function init()
+			{
+				
+				//document.addEventListener("deviceready",onDeviceReady,false);
+				
+			}
+			
+			
+			$(":mobile-pagecontainer").on("pagecontainerchange", function(event, ui)
+				{
+					//alert("Page container change (Login Page)!");
+					document.addEventListener("deviceready",onDeviceReady,false);
+					
+					$(":mobile-pagecontainer").unbind();
+				}
+			);
+			
+			
+			
+			
+			
+			function onDeviceReady()
+			{
+				//Device ready
+				var url = $.mobile.activePage[0].baseURI;
+				
+				street_id = url.split("?")[1];
+				street_id = street_id.replace("street_id=","");
+				
+				street_name = url.split("?")[2];
+				street_name = street_name.replace("street_name=","");
+				street_name = street_name.replace("_"," ");
+				
+				h_n = url.split("?")[3];
+				h_n = h_n.replace("h_n=","");
+				
+				h_u = url.split("?")[4];
+				h_u = h_u.replace("h_u=","");
+				
+				f_n = url.split("?")[5];
+				f_n = f_n.replace("f_n=","");
+				
+				f_u = url.split("?")[6];
+				f_u = f_u.replace("f_u=","");
+				
+				/*alert(h_n);
+				alert(h_u);
+				alert(f_n);
+				alert(f_u);*/
+				
+				$("#text").empty().append(street_name + " ielas lapa");
+				
+				
+				$("#loading").append('Loading...');
+				
+				
+				
+				var cloud = new Cloud();
+				cloud.findAllByKey ("customers", "street_name",street_name,customerSuccess,customerFailed);
+				
+			}
+			
+			function customerSuccess(rez)
+			{	
+				alert("Ieladeja klientus!");
+				customerList = rez;
+				
+				var cloud = new Cloud();
+				cloud.findAll("comments", commentsSuccess,commentsFailed)
+			}
+			
+			function customerFailed()
+			{
+				alert("FAILED!");
+				$("#loading").empty();
+				$("#list").append('<li data-icon="plus"><a href='+
+					'"insertFlat_page.html?street_id='+street_id+'?street_name='+street_name.replace(" ","_")+
+					'?h_n='+h_n+'?h_u='+h_u+'?f_n='+f_n+'?f_u='+f_u+'"'+
+					'data-role="button"   data-transition="slide">Pievienot Jaunu Dzivokli</a>'
+				).listview("refresh");
+			}
+			
+			function commentsSuccess(rez)
+			{
+				alert("ieladeja komentarus!");
+				commentsList= rez;
+				
+				var cloud = new Cloud();
+				cloud.findAllByKey ("flats","street_name",street_name,success,failed);
+			}
+			
+			function commentsFailed()
+			{
+				alert("Comments Failed!");
+				$("#loading").empty();
+				$("#list").append('<li data-icon="plus"><a href='+
+					'"insertFlat_page.html?street_id='+street_id+'?street_name='+street_name.replace(" ","_")+
+					'?h_n='+h_n+'?h_u='+h_u+'?f_n='+f_n+'?f_u='+f_u+'"'+
+					'data-role="button"   data-transition="slide">Pievienot Jaunu Dzivokli</a>'
+				).listview("refresh");
+				
+			}
+			
+			function success(response)
+			{
+				$("#loading").empty();
+				//alert("SUCCESS");
+				
+				
+				
+				var htmlstring = "";
+				for (i=0; i<response.length;i++)
+				{
+				
+					var avScore ="NA";
+					//Mekle novertejumu
+					alert(response[i].street_name+" "+response[i].num);
+					
+					for (j=0;j<customerList.length;j++)
+					{
+						
+						if (customerList[j].flat_id==response[i]._id.$oid)
+						{
+							//alert("Customer: "+ customerList[j]._id.$oid);
+							var summ=0;
+							var count =0;
+							for (k=0;k<commentsList.length;k++)
+							{
+								if (commentsList[k].cust_id == customerList[j]._id.$oid)
+								{
+									//alert(commentsList[k].score);
+									count++;
+									summ+=parseFloat(commentsList[k].score);
+								}
+								
+								
+							}
+							if (count >0)
+							{
+								avScore = summ/count;
+								//alert("Average Score: "+avScore+" sum "+summ+" count "+count);
+							}
+							else
+							{
+								avScore ="NA";
+								//alert("Average Score: "+avScore);
+							}
+						}
+					}
+					
+					{
+						var h_nmb = (response[i].num).split("-")[0];
+						var f_nmb = (response[i].num).split("-")[1];
+						
+						htmlstring += '<li data-icon="home">' + '<a href="flat_page.html?id='+response[i]._id.$oid+'?street='+
+						response[i].street_name.replace(" ","_")+'?house='+h_nmb+'?flat='+f_nmb+'" '+
+						'data-role="button" data-transition="slide">['+avScore+'] '+
+						response[i].street_name + ' '+ h_nmb+' - '+ f_nmb
+						'</a></li>';
+					}
+				}
+				
+				$("#list").empty().append(htmlstring);
+				
+				$("#list").append('<li data-icon="plus"><a href='+
+					'"insertFlat_page.html?street_id='+street_id+'?street_name='+street_name.replace(" ","_")+
+					'?h_n='+h_n+'?h_u='+h_u+'?f_n='+f_n+'?f_u='+f_u+'"'+
+					'data-role="button"   data-transition="slide">Pievienot Jaunu Dzivokli</a>'
+				).listview("refresh");
+				
+			}
+			
+			function failed(err)
+			{
+			
+				//alert("Failed!");
+				$("#loading").empty();
+				if (err == 2601)
+				{
+					alert("NOTHING IN!");
+				}
+				else
+				{
+					alert("Error! "+ err);
+				}
+				
+				$("#loading").empty();
+				$("#list").append('<li data-icon="plus"><a href='+
+					'"insertFlat_page.html?street_id='+street_id+'?street_name='+street_name.replace(" ","_")+
+					'?h_n='+h_n+'?h_u='+h_u+'?f_n='+f_n+'?f_u='+f_u+'"'+
+					'data-role="button"   data-transition="slide">Pievienot Jaunu Dzivokli</a>'
+				).listview("refresh");
+			}
+			
+		
+			
+		</script>
+		
+		
+			<div data-role = "header" id = "head" data-theme="b" class="center-wrapper" data-position="fixed">
+				Ielas lapa
+			</div>
+			<div data-role="content" id="cont">
+			
+				<div id="loading">
+				
+				</div>
+				
+				<div id = "text">
+				
+				</div>
+				<br>
+				
+				<form class="ui-filterable">
+					<input id="filterBasic-input" data-type="search">
+				</form>
+				<ul data-role="listview" id = "list" data-inset="true" data-filter="true" data-input="#filterBasic-input">
+					
+				</ul>	
+					
+				
+			</div>
+			<div data-role="footer" data-theme="b" class="center-wrapper" data-position="fixed">
+				MADE BY KRISTAPS
+			</div>
+		</div>
+    </body>
+</html>

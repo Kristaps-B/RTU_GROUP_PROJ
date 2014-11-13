@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="msapplication-tap-highlight" content="no" />
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+        <title>RTU APP (INSERT_COMMENT)</title>
+		
+		<link rel="stylesheet" type="text/css" href="css/themes/default/jquery.mobile-1.4.3.min.css"/>
+		<link rel="stylesheet" type="text/css" href="css/main.css" />
+		
+		<script type="text/javascript" src="js/jquery.js"></script>
+		<script type="text/javascript" src="js/jquery.mobile-1.4.3.js"></script>
+		<script type="text/javascript" src="cordova.js"></script>
+		<script type="text/javascript" src="js/cloud.js"></script>
+		
+		<script type="text/javascript">
+			$(document).on("pagecreate","#jobs_page",function(){
+				document.addEventListener("deviceready",onDeviceReady,false);
+				
+			});
+		</script>
+		
+    </head>
+    <body onload = "init()">
+        <div data-role ="page" id = "flat_page" >
+			
+			<script type = "text/javascript">
+			
+			var cust_id;
+			
+			function init()
+			{
+				
+				//document.addEventListener("deviceready",onDeviceReady,false);
+				//settings                                                                                                                                                                              
+				
+			}
+			
+			
+			$(":mobile-pagecontainer").on("pagecontainerchange", function(event, ui)
+				{
+					//alert("Page container change (Login Page)!");
+					document.addEventListener("deviceready",onDeviceReady,false);
+					
+					$(":mobile-pagecontainer").unbind();
+				}
+			);
+			
+			
+			
+			
+			
+			function onDeviceReady()
+			{
+				//Device ready
+				
+				var url = $.mobile.activePage[0].baseURI;
+				//alert(url);
+				cust_id = url.split("?")[1];
+				cust_id = cust_id.replace("cust_id=","");
+				
+				//Appending izveles!
+				$("#stat").append('<option value="Pievienots dinamiski">Pievienots dinamiski</option>');
+				$("#stat").trigger('create');
+			}
+			
+			function submitForm()
+			{
+				var uname = window.localStorage.getItem("uname");
+				//alert(uname);
+				
+				var statuss= $("[name='statuss']").val();
+				//alert(statuss);
+				
+				var c_id = cust_id;
+				//alert(c_id);
+				
+				
+				var novert = $("[name='novertejums']").val();
+				//alert(novert);
+				
+				var comment = $("[name='komentars']").val();
+				//alert(comment);
+				
+				var json = '{"cust_id":"'+cust_id+'","uname":"'+uname+'","status":"'+statuss+'","score":"'+novert+'","comment":"'+comment+'"}';
+				var cloud = new Cloud();
+				
+				$("#subm").button('disable');	
+				
+				$("#loading").append('Loading...');
+				cloud.insertNew("comments", json, insertSuccess,insertFail);
+				
+				
+				
+				return false;
+			}
+			
+			function insertSuccess()
+			{
+				$("#loading").empty();
+				alert("Success");
+				
+				$("#insert_form").empty();
+				$("#back").append('<br><a href="#" id="back_b" data-rel="back" class="ui-btn">Atpakaļ</a>');
+				$('#back_b').buttonMarkup({ icon: "back" });
+				
+			}
+			
+			function insertFail(error)
+			{
+				$("#loading").empty();
+				alert("Failed!");
+				
+				var storageObj = JSON.parse(error);  
+				var appErrorCode = storageObj.app42Fault.appErrorCode;
+				
+				alert(error);
+				alert(appErrorCode);
+				
+				$("#subm").button('enable');	
+			}
+		
+			
+		</script>
+		
+		
+			<div data-role = "header" id = "head" data-theme="b" class="center-wrapper" data-position="fixed">
+				Komentaru lapa
+			</div>
+			<div data-role="content" id="cont">
+			
+				<div id="loading">
+				
+				</div>
+				
+				<div id = "text">
+				
+				</div>
+				
+				<form method = "POST" id="insert_form"  onSubmit="return submitForm()">
+					<label for="stat">Statuss:</label>
+					<select name ="statuss" id="stat">
+						<option value="Nebija majas">Nebija majas</option>
+						<option value="Pasutija talak">Pasutija 4 majas talak</option>
+						<option value="Nebija naudas">Nebija naudas</option>
+						<option value="Draudeja">Draudeja</option>
+						<option value="Nopirka produktus">Nopirka produktus</option>
+						<option value="Gribeja iepirkties citreiz">Gribeja iepirkties citreiz</option>
+					</select>
+					
+					<label for="nov">Novertejums:</label>
+					<select name ="novertejums" id="nov">
+						<option value="5">5</option>
+						<option value="4">4</option>
+						<option value="3">3</option>
+						<option value="2">2</option>
+						<option value="1">1</option>
+						<option value="0">0</option>
+					</select>
+					
+						
+					<label for="comm">Komentārs:</label>
+					<textarea name="komentars" id="comm">              </textarea>
+
+					
+					<input type="submit" id="subm" value="submit">
+				</form>
+				
+				<div id="back">
+				
+				</div>
+				
+				
+				<br>
+				<ul data-role="listview" id = "list" data-inset="true">
+					
+				</ul>	
+					
+				
+			</div>
+			<div data-role="footer" data-theme="b" class="center-wrapper" data-position="fixed">
+				MADE BY KRISTAPS
+			</div>
+		</div>
+    </body>
+</html>

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="msapplication-tap-highlight" content="no" />
+        <meta name="viewport" content="user-scalable=yes, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+        <title>RTU APP (STATISTICS)</title>
+		
+		<link rel="stylesheet" type="text/css" href="css/themes/default/jquery.mobile-1.4.3.min.css"/>
+		<link rel="stylesheet" type="text/css" href="css/main.css" />
+		
+		<script type="text/javascript" src="js/jquery.js"></script>
+		<script type="text/javascript" src="js/jquery.mobile-1.4.3.js"></script>
+		<script type="text/javascript" src="cordova.js"></script>
+		<script type="text/javascript" src="js/cloud.js"></script>
+		
+		<script type="text/javascript">
+			$(document).on("pagecreate","#jobs_page",function(){
+				document.addEventListener("deviceready",onDeviceReady,false);
+				writeAll();
+			});
+		</script>
+		
+    </head>
+    <body onload = "init()">
+        <div data-role ="page" id = "jobs_page" >
+			
+			<script type="text/javascript" src="js/App42-all-2.7.2.min.js"></script>
+			
+			<script type = "text/javascript">
+			
+			var userList;
+			var purchList;
+			
+			function init()
+			{
+				
+				//document.addEventListener("deviceready",onDeviceReady,false);
+				
+			}
+			
+			
+			$(":mobile-pagecontainer").on("pagecontainerchange", function(event, ui)
+				{
+					//alert("Page container change (Login Page)!");
+					document.addEventListener("deviceready",onDeviceReady,false);
+					$(":mobile-pagecontainer").unbind();
+				}
+			);
+			
+
+			
+			function onDeviceReady()
+			{
+				//Device ready
+				
+				loadAll();
+			}
+			
+			function loadAll()
+			{
+				//Ielade visu
+				
+				$("#loading").append('Loading...');
+				
+				var cloud = new Cloud();
+				cloud.findAll("users",usersSuccess,usersFailed);
+			}
+			
+			function usersSuccess(rez)
+			{
+				alert("User Loading Success!")
+				userList = rez;
+				
+				var cloud = new Cloud();
+				cloud.findAll("purchases",purchSuccess,purchFailed);
+			}
+			
+			function usersFailed()
+			{
+				alert("User Loading Failed!");
+			}
+			
+			function purchSuccess(rez)
+			{
+				alert("Pirkumi Loading Success!");
+				purchList = rez;
+				createTable();
+			}
+			
+			function purchFailed()
+			{
+				alert("Pirkumi Loading Failed!");
+			}
+			
+			function createTable()
+			{
+				//Creating Table
+				alert("Create Table!");
+				$("#loading").empty();
+				
+				var response = userList;
+				
+				var htmlstring = "";
+				for (i=0; i<response.length;i++)
+				{
+					var summ = 0;
+					var price = 0;
+					var count = 0;
+					for (j=0;j<purchList.length;j++)
+					{
+						if (response[i].uname == purchList[j].uname)
+						{
+							summ += parseFloat(purchList[j].amount);
+							price += parseFloat(purchList[j].price);
+							count++;
+						}
+					}
+					
+					{
+						htmlstring += '<tr>'+
+							'<td>'+response[i].uname+'</td>'+
+							'<td>'+summ+'</td>'+
+							'<td>'+count+'</td>'+
+							'<td>'+AAAA+'</td>'
+						+'</tr>';
+					}
+				}
+				//alert(htmlstring);
+				
+				$("#table_cont").empty().append(htmlstring);
+				$("#table").table("refresh");
+				
+			}
+			
+			/*
+			function findSuccess(response)
+			{
+				alert("Success!");
+				$("#loading").empty();
+				
+				var htmlstring = "";
+				for (i=0; i<response.length;i++)
+				{
+					
+					{
+						htmlstring += '<tr>'+
+							'<td>'+response[i].uname+'</td>'+
+							'<td>'+response[i].product+'</td>'+
+							'<td>'+response[i].amount+'</td>'+
+							'<td>'+response[i].price+'</td>'
+						+'</tr>';
+					}
+				}
+				//alert(htmlstring);
+				
+				$("#table_cont").empty().append(htmlstring);
+				$("#table").table("refresh");
+			}
+			
+			function findFailed()
+			{
+				alert("Fail!");
+				$("#loading").empty();
+			}
+			*/
+			
+			/*
+			
+				
+				<a href="chart_page.html" data-role="button"   rel="external">Grafiks</a>
+			*/
+			
+		</script>
+		
+		
+			<div data-role = "header" data-theme="b" class="center-wrapper" data-position="fixed">
+				Statistika
+			</div>
+			<div data-role="content" id="cont">
+				
+				<div id="loading">
+				</div>
+				<br>
+				
+				<div id="table" data-role="table" data-mode="columntoggle" class = "ui-responsive">
+				<table id="myTable">
+					<thead>
+						<th data-priority>Darbinieks</th>
+						<th data-priority="2">Produkts</th>
+						<th data-priority="3">Daudzums</th>
+						<th data-priority="4">Cena</th>
+					</thead>
+					<tbody id="table_cont">
+						
+					</tbody>
+				</table>
+			</div>
+				
+				
+				<ul data-role="listview" id = "list" data-inset="true">
+					
+				</ul>	
+					
+				
+			</div>
+			<div data-role="footer" data-theme="b" class="center-wrapper" data-position="fixed">
+				MADE BY KRISTAPS
+			</div>
+		</div>
+    </body>
+</html>

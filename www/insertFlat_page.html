@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="msapplication-tap-highlight" content="no" />
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+        <title>RTU APP (INSERT_FLAT)</title>
+		
+		<link rel="stylesheet" type="text/css" href="css/themes/default/jquery.mobile-1.4.3.min.css"/>
+		<link rel="stylesheet" type="text/css" href="css/main.css" />
+		
+		<script type="text/javascript" src="js/jquery.js"></script>
+		<script type="text/javascript" src="js/jquery.mobile-1.4.3.js"></script>
+		<script type="text/javascript" src="cordova.js"></script>
+		<script type="text/javascript" src="js/App42-all-2.7.2.min.js"></script>
+		<script type="text/javascript" src="js/sha1.js"></script>
+		<script type="text/javascript" src="js/cloud.js"></script>
+		
+		<script type="text/javascript">
+			$(document).on("pagecreate","#insertUser_page",function(){
+				document.addEventListener("deviceready",onDeviceReady,false);
+			});
+		</script>
+		
+    </head>
+    <body onload = "init()">
+        <div data-role ="page" id = "insertUser_page" >
+			
+			
+			
+			<script type = "text/javascript">
+			var street_id;
+			var street_name;
+			
+			var json;
+			
+			var h_n;
+			var h_u;
+			var f_n;
+			var f_u;
+			
+			function init()
+			{
+				//Pamet Tuksu
+				//document.addEventListener("deviceready",onDeviceReady,false);
+				
+			}
+			
+			$(":mobile-pagecontainer").on("pagecontainerchange", function(event, ui)
+				{
+					//alert("Page container change (Login Page)!");
+					document.addEventListener("deviceready",onDeviceReady,false);
+					
+					$(":mobile-pagecontainer").unbind();
+				}
+			);
+			
+			function onDeviceReady()
+			{
+				//Device ready
+				//alert("LOGIN");
+				
+				var url = $.mobile.activePage[0].baseURI;
+				
+				//alert(url);
+				
+				street_id = url.split("?")[1];
+				street_id = street_id.replace("street_id=","");
+				
+				street_name = url.split("?")[2];
+				street_name = street_name.replace("street_name=","");
+				street_name = street_name.replace("_"," ");
+				
+				h_n = url.split("?")[3];
+				h_n = h_n.replace("h_n=","");
+				
+				h_u = url.split("?")[4];
+				h_u = h_u.replace("h_u=","");
+				
+				f_n = url.split("?")[5];
+				f_n = f_n.replace("f_n=","");
+				
+				f_u = url.split("?")[6];
+				f_u = f_u.replace("f_u=","");
+				
+				alert(h_n);
+				alert(h_u);
+				alert(f_n);
+				alert(f_u);
+				
+				//alert(street_name);
+				//alert(street_id);
+				$("[name='street']").val(street_name);
+				$("[name='street']").textinput('disable');	
+				
+			}
+			
+			
+			function submitForm()
+			{
+				//alert("SUBMIT");
+				
+				var street = $("[name='street']").val();
+				var house_n = $("[name='house']").val();
+				var flat_n = $("[name='flat']").val();
+
+				json = '{"street_id":"'+street_id+'","street_name":"'+street+'","num":"'+house_n+'-'+flat_n+'"}';
+
+				$("#loading").append('Loading...');
+				var cloud = new Cloud();
+				
+				var num = house_n+'-'+flat_n;
+				var q =cloud.queryFromTwo("street_name", street, "num", num);
+
+				cloud.isIn("flats",q,isInSuccess, isInFailed);
+				
+				return false;
+			}
+			
+			function isInSuccess()
+			{
+				alert("Tadas adreses nepastav. Pievieno jaunu...");
+				var cloud = new Cloud();
+				cloud.insertNew("flats", json, insertSuccess,insertFail);
+			}
+			
+			function isInFailed()
+			{
+				alert("Tada adrese jau pastav!");
+				$("#loading").empty();
+			}
+			
+			function insertSuccess(resp)
+			{
+				
+				alert("Pievieno jaunu klientu....");
+				
+				var json_flat = '{"flat_id":"'+resp._id.$oid+'","street_name":"'+street_name+'"}';
+				
+				var cloud = new Cloud();
+				cloud.insertNew("customers", json_flat, insertClientSuccess,insertClientFailed);
+				
+				/*
+				$("#insert_form").empty();
+				$("#back").append('<br><a href="#" data-rel="back" class="ui-btn">Atpakaļ</a>');
+				*/
+			}
+			
+			function insertClientSuccess()
+			{
+				$("#loading").empty();
+				
+				alert("Client created!");
+				
+				$("#insert_form").empty();
+				$("#back").append('<br><a href="#" data-rel="back" class="ui-btn">Atpakaļ</a>');
+			}
+			
+			function insertClientFailed()
+			{
+				alert("Failed!");
+			}
+			
+			function insertFail(err)
+			{
+				$("#loading").empty();
+				alert("Error: "+err);
+			}
+			
+			
+			
+		</script>
+		
+		
+			<div data-role = "header" data-theme="b" class="center-wrapper" data-position="fixed">
+				IZVEIDOT JAUNU DZIVOKLI
+			</div>
+			<div data-role="content" id="cont">
+				<div id="loading">
+				
+				</div>
+				<form method = "POST" id="insert_form"  onSubmit="return submitForm()">
+					<input name="street" type="text" placeholder="Iela">
+					<input name="house" type="number" placeholder="Māja">
+					<input name="flat" type="number" placeholder="Dzīvoklis">
+					<input type="submit" value="Apstiprināt">
+				</form>
+				<br>
+				
+				<div id="back">
+				
+				</div>
+				
+				<ul data-role="listview" id = "list" data-inset="true">
+					
+				</ul>	
+			</div>
+			<div data-role="footer" data-theme="b" class="center-wrapper" data-position="fixed">
+				MADE BY KRISTAPS
+			</div>
+		</div>
+    </body>
+</html>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="msapplication-tap-highlight" content="no" />
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+        <title>RTU APP (MAIN)</title>
+		
+		<link rel="stylesheet" type="text/css" href="css/themes/default/jquery.mobile-1.4.3.min.css"/>
+		<link rel="stylesheet" type="text/css" href="css/main.css" />
+		
+		<script type="text/javascript" src="js/jquery.js"></script>
+		<script type="text/javascript" src="js/jquery.mobile-1.4.3.js"></script>
+		<script type="text/javascript" src="cordova.js"></script>
+		<script type="text/javascript" src="js/App42-all-2.7.2.min.js"></script>
+		
+    </head>
+    <body onload = "init()">
+        <div data-role ="page" id = "main_page" >
+		<script type = "text/javascript">
+			
+			function init()
+			{
+				
+				
+				
+			}
+			
+			
+			$(":mobile-pagecontainer").on("pagecontainerchange", function(event, ui)
+				{
+					
+					document.addEventListener("deviceready",onDeviceReady,false);
+					
+					$(":mobile-pagecontainer").unbind();
+				}
+			);
+			
+			
+			
+			
+			
+			function onDeviceReady()
+			{
+				//alert("MAIN");
+				writeUser();
+			}
+			
+			function writeUser()
+			{
+				//9m gipsa
+				//
+				//Device ready
+				//alert("Device Ready!");
+				var uname = window.localStorage.getItem("uname");
+				var su = window.localStorage.getItem("su");
+				var uid = window.localStorage.getItem("id");
+				
+				if (uname == undefined)
+				{
+					//alert("Nav lietotaja!");
+					$("#hello").empty().append("Lūdzu pierakstieties!<br><br>");
+					
+					$("#list").empty().append('<li><a href="login_page.html" data-role="button"   data-transition="slide">Pierakstīties</a></li>');
+					$("#list").listview("refresh");
+				}
+				else
+				{
+					//alert("Lietotājs: "+uname);
+					$("#list").empty().append("<li>Lietotājs: "+uname+"</li>");
+					$("#hello").empty().append("Sveiks, "+uname+"!<br><br>");
+					
+					$("#list").empty();
+					if (su == "true")
+					{
+						$("#list").append('<li><a href="users_page.html" data-role="button"   data-transition="slide">Darbinieki</a></li>');
+						$("#list").append('<li><a href="statistics_page.html" data-role="button"   data-transition="slide">Statistika</a></li>');
+						$("#list").append('<li><a href="settings_page.html" data-role="button"   data-transition="slide">Opcijas</a></li>');
+					}
+					else
+					{
+						$("#list").append('<li><a href="jobs_page.html?uid='+uid+'" data-role="button"   data-transition="slide">Darbi</a></li>');
+					}
+					
+					$("#list").append('<li><a href="logout_page.html" data-role="button"   data-transition="slide">Izrakstities</a></li>');
+					$("#list").listview("refresh");
+					
+					//Add to footer
+					$("#foot").append(uname);
+					$("#foot").trigger('create');
+					
+				}
+				
+			}
+		</script>
+		
+		
+			<div data-role = "header" data-theme="b" class="center-wrapper" data-position="fixed">
+				GALVENA LAPA
+			</div>
+			<div data-role="content">
+				<div id="hello">
+				</div>
+				<ul data-role="listview" data-inset="true" id = "list">
+					
+				</ul>
+				
+			</div>
+			<div data-role="footer" id="foot" data-theme="b"  class="ui-bar" data-position="fixed">
+					<a href="#" id="back_b" data-rel="back" data-role="button" data-icon="back"></a>
+					<a href="main_page.html" id="back_b" data-role="button" data-icon="home"></a>
+			</div>
+		</div>
+    </body>
+</html>

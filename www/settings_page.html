@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="msapplication-tap-highlight" content="no" />
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+        <title>RTU APP (SETTINGS)</title>
+		
+		<link rel="stylesheet" type="text/css" href="css/themes/default/jquery.mobile-1.4.3.min.css"/>
+		<link rel="stylesheet" type="text/css" href="css/main.css" />
+		
+		<script type="text/javascript" src="js/jquery.js"></script>
+		<script type="text/javascript" src="js/jquery.mobile-1.4.3.js"></script>
+		<script type="text/javascript" src="cordova.js"></script>
+		
+		<script type="text/javascript">
+			$(document).on("pagecreate","#users_page",function(){
+				document.addEventListener("deviceready",onDeviceReady,false);
+			});
+		</script>
+		
+    </head>
+    <body onload = "init()">
+        <div data-role ="page" id = "settings_page" >
+			
+			<script type="text/javascript" src="js/App42-all-2.7.2.min.js"></script>
+			
+			<script type = "text/javascript">
+			
+			function init()
+			{
+				
+				//document.addEventListener("deviceready",onDeviceReady,false);
+				
+			}
+			
+			
+			$(":mobile-pagecontainer").on("pagecontainerchange", function(event, ui)
+				{
+					//alert("Page container change (Login Page)!");
+					document.addEventListener("deviceready",onDeviceReady,false);
+					
+					$(":mobile-pagecontainer").unbind();
+				}
+			);
+			
+			
+			
+			function onDeviceReady()
+			{
+				//Device ready
+				
+				writeAll();
+			}
+			
+			function writeAll()
+			{
+				$("#loading").append('Loading...');
+				
+				
+				var cloud = new Cloud();
+				cloud.findAll("settings", success, fail);
+				
+				
+				
+			}
+			
+			function success(response)
+			{
+				var htmlstring = "";
+				//alert(response.length)
+				
+				$("#loading").empty();
+				
+				
+				
+				for (i=0; i<response.length;i++)
+				{
+					if (response[i].opc_v=="produkts")
+					{
+						htmlstring += '<li data-icon="delete">' + '<a href="#"'+
+						'data-role="button" onclick="deleteClicked(\''+response[i]._id.$oid+'\')">'+
+						response[i].kultura +' '+response[i].suga+
+						'</a></li>';
+					}
+				}
+				
+				$("#list_1").empty().append(htmlstring);
+				
+				$("#list_1").append('<li data-icon="plus"><a href='+
+				'"insertProduct_page.html"'+
+				'data-role="button"   data-transition="slide">Pievienot Jaunu preci</a>'
+				);
+				
+				$("#list_1").listview("refresh");
+			}
+			
+			function deleteClicked(setting_id)
+			{
+				var r = confirm("Vai velies izdzest darbu?");
+				
+				if (r == true)
+				{
+					var cloud = new Cloud();
+					$("#loading").append('Loading...');
+					cloud.deleteByID("settings", setting_id, deleteSuccess,deleteFailed);
+				}
+				
+			}
+			
+			function deleteSuccess()
+			{
+				alert("Success!");
+				$("#loading").empty();
+				writeAll();
+			
+				
+			}
+			function deleteFailed()
+			{
+				alert("Failed!");
+				$("#loading").empty();
+			}
+			
+			function fail(errorCode)
+			{
+				if (errorCode == 2601)
+				{
+					//
+				}
+				else
+				{
+					alert("Error! "+ error);
+				}
+				
+				
+				$("#loading").empty();
+				
+				$("#list_1").append('<li data-icon="plus"><a href='+
+				'"insertProduct_page.html"'+
+				'data-role="button"   data-transition="slide">Pievienot Jaunu preci</a>'
+				);
+				
+				$("#list_1").listview("refresh");
+			}
+			
+			
+			
+			
+			
+			
+			
+		</script>
+		
+		
+			<div data-role = "header" data-theme="b" class="center-wrapper" data-position="fixed">
+				Opcijas
+			</div>
+			<div data-role="content" id="cont">
+				<div id="loading">
+				
+				</div>
+				
+				<b>Produkti</b>
+				<ul data-role="listview" id = "list_1" data-inset="true">
+					
+				</ul>	
+					
+				
+			</div>
+			<div data-role="footer" data-theme="b" class="center-wrapper" data-position="fixed">
+				MADE BY KRISTAPS
+			</div>
+		</div>
+    </body>
+</html>

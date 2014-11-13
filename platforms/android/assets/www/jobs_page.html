@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="msapplication-tap-highlight" content="no" />
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+        <title>RTU APP (JOBS)</title>
+		
+		<link rel="stylesheet" type="text/css" href="css/themes/default/jquery.mobile-1.4.3.min.css"/>
+		<link rel="stylesheet" type="text/css" href="css/main.css" />
+		
+		<script type="text/javascript" src="js/jquery.js"></script>
+		<script type="text/javascript" src="js/jquery.mobile-1.4.3.js"></script>
+		<script type="text/javascript" src="cordova.js"></script>
+		<script type="text/javascript" src="js/cloud.js"></script>
+		
+		<script type="text/javascript">
+			$(document).on("pagecreate","#jobs_page",function(){
+				document.addEventListener("deviceready",onDeviceReady,false);
+				writeAll();
+			});
+		</script>
+		
+    </head>
+    <body onload = "init()">
+        <div data-role ="page" id = "jobs_page" >
+			
+			<script type="text/javascript" src="js/App42-all-2.7.2.min.js"></script>
+			
+			<script type = "text/javascript">
+			
+			function init()
+			{
+				
+				//document.addEventListener("deviceready",onDeviceReady,false);
+				
+			}
+			
+			
+			$(":mobile-pagecontainer").on("pagecontainerchange", function(event, ui)
+				{
+					//alert("Page container change (Login Page)!");
+					document.addEventListener("deviceready",onDeviceReady,false);
+					
+					$(":mobile-pagecontainer").unbind();
+				}
+			);
+			
+			function success(response)
+			{
+				var htmlstring = "";
+				//alert(response.length)
+				$("#loading").empty();
+				
+				
+				
+				for (i=0; i<response.length;i++)
+				{
+					
+					if (response[i].su != "true")
+					{
+						var street = response[i].street;
+						
+						street = street.replace(" ","_");
+					
+					
+						if (response[i].hFrom == "NULL" && response[i].hUntil == "NULL" &&
+						response[i].fFrom == "NULL" && response[i].fUntil == "NULL")
+						{
+							htmlstring += '<li data-icon="gear">' + '<a href="street_page.html?street_id='+response[i]._id.$oid+'?street_name='+street+
+							'?h_n='+response[i].hFrom+'?h_u='+response[i].hUntil+'?f_n='+response[i].fFrom+'?f_u='+response[i].fUntil+'"'+
+							'data-role="button" data-transition="slide">'+
+							response[i].street +
+							'</a></li>';
+						}
+						else if (response[i].hFrom != "NULL" && response[i].hUntil != "NULL" &&
+						response[i].fFrom == "NULL" && response[i].fUntil == "NULL")
+						{
+							htmlstring += '<li data-icon="gear">' + '<a href="street_page.html?street_id='+response[i]._id.$oid+'?street_name='+street+
+							'?h_n='+response[i].hFrom+'?h_u='+response[i].hUntil+'?f_n='+response[i].fFrom+'?f_u='+response[i].fUntil+'"'+
+							'data-role="button" data-transition="slide">'+
+							response[i].street + ' ('+response[i].hFrom+' - '+response[i].hUntil +')'+
+							'</a></li>';
+						}
+						else if (response[i].hFrom != "NULL" && response[i].hUntil == "NULL" &&
+						response[i].fFrom != "NULL" && response[i].fUntil != "NULL")
+						{
+							htmlstring += '<li data-icon="gear">' + '<a href="street_page.html?street_id='+response[i]._id.$oid+'?street_name='+street+
+							'?h_n='+response[i].hFrom+'?h_u='+response[i].hUntil+'?f_n='+response[i].fFrom+'?f_u='+response[i].fUntil+'"'+
+							'data-role="button" data-transition="slide">'+
+							response[i].street + ' '+response[i].hFrom+' ('+response[i].fFrom+' - '+response[i].fUntil+')'+
+							'</a></li>';
+						}
+					}
+				}
+				
+				$("#list").empty().append(htmlstring);
+				$("#list").listview("refresh");
+			}
+			
+			function fail(errorCode)
+			{
+				if (errorCode == 2601)
+				{
+					alert("Tev nav darba!");
+				}
+				else
+				{
+					alert("Error! "+ error);
+				}
+				
+				
+				$("#loading").empty();
+			}
+			
+			function onDeviceReady()
+			{
+				//Device ready
+				var url = $.mobile.activePage[0].baseURI;
+				
+				var uid = url.split("?")[1];
+				uid = uid.replace("uid=","");
+				
+				
+				$("#loading").append('Loading...');
+				
+				
+				var id = uid;
+				
+				//writeAll(id);
+				var cloud = new Cloud();
+				cloud.findAllByKey("jobs","uid",id, success, fail);
+			}
+			
+		
+			
+		</script>
+		
+		
+			<div data-role = "header" data-theme="b" class="center-wrapper" data-position="fixed">
+				Darbi
+			</div>
+			<div data-role="content" id="cont">
+				<div id="loading">
+				
+				</div>
+				
+				<ul data-role="listview" id = "list" data-inset="true">
+					
+				</ul>	
+					
+				
+			</div>
+			<div data-role="footer" data-theme="b" class="center-wrapper" data-position="fixed">
+				MADE BY KRISTAPS
+			</div>
+		</div>
+    </body>
+</html>

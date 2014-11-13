@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="msapplication-tap-highlight" content="no" />
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+        <title>RTU APP (FLAT)</title>
+		
+		<link rel="stylesheet" type="text/css" href="css/themes/default/jquery.mobile-1.4.3.min.css"/>
+		<link rel="stylesheet" type="text/css" href="css/main.css" />
+		
+		<script type="text/javascript" src="js/jquery.js"></script>
+		<script type="text/javascript" src="js/jquery.mobile-1.4.3.js"></script>
+		<script type="text/javascript" src="cordova.js"></script>
+		<script type="text/javascript" src="js/cloud.js"></script>
+		
+		<script type="text/javascript">
+			$(document).on("pagecreate","#jobs_page",function(){
+				document.addEventListener("deviceready",onDeviceReady,false);
+				writeAll();
+			});
+		</script>
+		
+    </head>
+    <body onload = "init()">
+        <div data-role ="page" id = "flat_page" >
+			
+			<script type = "text/javascript">
+			
+			var flat_id;
+			var street;
+			var house;
+			var flat;
+			
+			var cust_id;
+			
+			function init()
+			{
+				
+				//document.addEventListener("deviceready",onDeviceReady,false);
+				
+			}
+			
+			
+			$(":mobile-pagecontainer").on("pagecontainerchange", function(event, ui)
+				{
+					//alert("Page container change (Login Page)!");
+					document.addEventListener("deviceready",onDeviceReady,false);
+					
+					$(":mobile-pagecontainer").unbind();
+				}
+			);
+			
+			
+			
+			
+			
+			function onDeviceReady()
+			{
+				//Device ready
+				
+				var url = $.mobile.activePage[0].baseURI;
+				//alert(url);
+				
+				flat_id = url.split("?")[1];
+				flat_id = flat_id.replace("id=","");
+			
+				
+				street = url.split("?")[2];
+				street = street.replace("street=","");
+				street=street.replace("_"," ")
+				
+				house = url.split("?")[3];
+				house = house.replace("house=","");
+				
+				flat = url.split("?")[4];
+				flat = flat.replace("flat=","");
+				
+				$("#text").empty().append(street+" iela "+house+" - "+flat);
+				
+				customer();
+				
+			}
+			
+			function customer()
+			{
+				$("#loading").append('Loading...');
+				var cloud = new Cloud();
+				//alert(id);
+				cloud.findAllByKey("customers", "flat_id", flat_id, success, failed);
+			}
+			
+			function success(resp)
+			{
+				alert("Customer Found!");
+				$("#loading").empty();
+				cust_id = resp[0]._id.$oid
+				//alert("CUST ID "+id);
+				
+				insertMoreElements();
+			}
+			
+			function failed(err_code)
+			{
+				if (err_code == 2601)
+				{
+					alert("Klients priekš šīs adreses nepastav!");
+					alert("Veido jaunu klientu...");
+					
+					var json_flat = '{"flat_id":"'+flat_id+'","street_name":"'+street+'"}';
+				
+					var cloud = new Cloud();
+					cloud.insertNew("customers", json_flat, insertClientSuccess,insertClientFailed);
+				}
+				else
+				{
+					alert("Error!");
+					$("#loading").empty();
+				}
+			}
+			
+			function insertClientSuccess(resp)
+			{
+				$("#loading").empty();
+				
+				alert("Client created!");
+				cust_id = resp[0]._id.$oid
+				//alert("CUST ID "+id);
+				
+				insertMoreElements();
+			}
+			
+			function insertClientFailed()
+			{
+				alert("Failed!");
+			}
+			
+			function insertMoreElements()
+			{
+				//Ievieto parejos elementus
+				
+				//$("#toPurch").button('disable');	
+				
+				//Ievieto komentaru
+				
+				var cloud = new Cloud();
+				$("#loading").append('Loading...');
+				cloud.findAllByKey ("comments","cust_id",cust_id,findSuccess,findFailed);
+				
+			}
+			
+			//Atrod komentarus un ievieto tos
+			function findSuccess(response)
+			{
+				$("#loading").empty();
+				alert("SUCCESS");
+				var htmlstring = "";
+				for (i=0; i<response.length;i++)
+				{
+					
+					{
+						htmlstring += '<div data-role="collapsible"><h4>'+response[i].uname+': '+response[i]._$createdAt+'</h4>' + 
+							
+							'<p>Status: '+response[i].status+'<br>'+
+							'Novertejums: '+response[i].score+'<br>'+
+							'Komentars: '+response[i].comment+'</p>'
+						+'</div>';
+					}
+				}
+				//alert(htmlstring);
+				
+				$("#comments").append(htmlstring).trigger("create");
+				
+				$("#list").append('<li data-icon="plus"><a href='+
+					'"insertComment_page.html?cust_id='+cust_id+'" '+
+					'data-role="button"   data-transition="slide">Pievienot Komentaru</a>'
+				).listview("refresh");
+				
+				$("#text").append('<br><a href="purchase_page.html?cust_id='+cust_id+'"'+
+				'id="toPurch" data-transition="slide" class="ui-btn">Pievienot Pirkumu</a>');
+				$("#toPurch").trigger('create');
+				$('#toPurch').buttonMarkup({ icon: "shop" });
+				
+				$("#text").append('<br><a href="changeCustomer_page.html?flat_id='+flat_id+'"'+
+				' id="toChange" data-transition="slide" class="ui-btn">Nomainīt Klientu</a>');
+				$("#toChange").trigger('create');
+				$('#toChange').buttonMarkup({ icon: "gear" });
+				
+				//$("#toPurch").button('enable');	
+			}
+			
+			
+			function findFailed(err)
+			{
+				$("#loading").empty();
+				if (err == 2601)
+				{
+					alert("NOTHING IN!");
+				}
+				else
+				{
+					alert("Error! "+ err);
+				}
+				
+				
+				$("#list").append('<li data-icon="plus"><a href='+
+					'"insertComment_page.html?cust_id='+cust_id+'" '+
+					'data-role="button"   data-transition="slide">Pievienot Komentaru</a>'
+				).listview("refresh");
+				
+				$("#text").append('<br><a href="purchase_page.html?cust_id='+cust_id+'"'+
+				'id="toPurch" data-transition="slide" class="ui-btn">Pievienot Pirkumu</a>');
+				$("#toPurch").trigger('create');
+				$('#toPurch').buttonMarkup({ icon: "shop" });
+				
+				$("#text").append('<br><a href="changeCustomer_page.html?flat_id='+flat_id+'"'+
+				'id="toChange" data-transition="slide" class="ui-btn">Nomainīt Klientu</a>');
+				$("#toChange").trigger('create');
+				$('#toChange').buttonMarkup({ icon: "gear" });
+				
+				//$("#toPurch").button('enable');	
+			}
+		
+			
+		</script>
+		
+		
+			<div data-role = "header" id = "head" data-theme="b" class="center-wrapper" data-position="fixed">
+				Dzivokla lapa
+			</div>
+			<div data-role="content" id="cont">
+			
+				<div id="loading">
+				
+				</div>
+				
+				<div id = "text">
+					
+				</div>
+				
+				<div id ="comments" data-inset="true">
+					<b>Komentāri:</b>
+				</div>
+				<br>
+				<ul data-role="listview" id = "list" data-inset="true">
+					
+				</ul>	
+					
+				
+			</div>
+			<div data-role="footer" data-theme="b" class="center-wrapper" data-position="fixed">
+				MADE BY KRISTAPS
+			</div>
+		</div>
+    </body>
+</html>

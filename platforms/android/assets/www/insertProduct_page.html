@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="msapplication-tap-highlight" content="no" />
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+        <title>RTU APP (INSERT_PRODUCT)</title>
+		
+		<link rel="stylesheet" type="text/css" href="css/themes/default/jquery.mobile-1.4.3.min.css"/>
+		<link rel="stylesheet" type="text/css" href="css/main.css" />
+		
+		<script type="text/javascript" src="js/jquery.js"></script>
+		<script type="text/javascript" src="js/jquery.mobile-1.4.3.js"></script>
+		<script type="text/javascript" src="cordova.js"></script>
+		<script type="text/javascript" src="js/App42-all-2.7.2.min.js"></script>
+		<script type="text/javascript" src="js/sha1.js"></script>
+		<script type="text/javascript" src="js/cloud.js"></script>
+		
+		<script type="text/javascript">
+			$(document).on("pagecreate","#insertUser_page",function(){
+				document.addEventListener("deviceready",onDeviceReady,false);
+			});
+		</script>
+		
+    </head>
+    <body onload = "init()">
+        <div data-role ="page" id = "insertUser_page" >
+			
+			
+			
+			<script type = "text/javascript">
+			
+			
+			function init()
+			{
+				//Pamet Tuksu
+				//document.addEventListener("deviceready",onDeviceReady,false);
+				
+			}
+			
+			$(":mobile-pagecontainer").on("pagecontainerchange", function(event, ui)
+				{
+					//alert("Page container change (Login Page)!");
+					document.addEventListener("deviceready",onDeviceReady,false);
+					
+					$(":mobile-pagecontainer").unbind();
+				}
+			);
+			
+			function onDeviceReady()
+			{
+				//Device ready
+				//alert("LOGIN");
+				
+			}
+						
+			
+			function submitForm()
+			{
+				alert("SUBMIT");
+				
+				var kultura = $("[name='kultura']").val();
+				var suga = $("[name='suga']").val();
+				var cena_kg = $("[name='cena_kg']").val();
+				var daudzums = $("[name='daudzums']").val();
+				
+				alert(kultura);
+				alert(suga);
+				alert(cena_kg);
+				alert(daudzums);
+				
+				var json = '{"opc_v":"produkts","kultura":"'+kultura+'","suga":"'+suga+'","cena_kg":"'+cena_kg+'","daudzums":"'+daudzums+'"}';
+				var cloud = new Cloud();
+				
+				$("#subm").button('disable');	
+				
+				$("#loading").append('Loading...');
+				cloud.insertNew("settings", json, insertSuccess,insertFail);
+				
+				return false;
+			}
+			
+			function insertSuccess()
+			{
+				alert("Success!");
+				$("#loading").empty();
+				
+				$("#insert_form").empty();
+				$("#back").append('<br><a href="#" id="back_b" data-rel="back" class="ui-btn">Atpakaļ</a>');
+				$('#back_b').buttonMarkup({ icon: "back" });
+			}
+			
+			function insertFail()
+			{
+				alert("Fail!");
+				$("#loading").empty();
+			}
+			
+			
+			
+			
+			
+		</script>
+		
+		
+			<div data-role = "header" data-theme="b" class="center-wrapper" data-position="fixed">
+				JAUNS PRODUKTS
+			</div>
+			<div data-role="content" id="cont">
+				<div id="loading">
+				
+				</div>
+				
+				<form method = "POST" id="insert_form"  onSubmit="return submitForm()">
+					<input name="kultura" type="text" placeholder="kultura">
+					<input name="suga" type="text" placeholder="suga">
+					<input name="cena_kg" type="number" placeholder="cena_kg">
+					<input name="daudzums" type="number" placeholder="daudzums">
+					<input type="submit" value="Apstiprināt">
+				</form>
+				
+				<br>
+				
+				<div id="back">
+				
+				</div>
+				
+				<ul data-role="listview" id = "list" data-inset="true">
+					
+				</ul>	
+			</div>
+			<div data-role="footer" data-theme="b" class="center-wrapper" data-position="fixed">
+				MADE BY KRISTAPS
+			</div>
+		</div>
+    </body>
+</html>

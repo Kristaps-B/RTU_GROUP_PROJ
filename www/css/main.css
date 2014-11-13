@@ -1,0 +1,26 @@
+.center-wrapper {
+text-align: center;
+}
+
+#map {
+	width: 100%;
+	height: 200px;
+	overflow: hidden;
+	margin: 0; padding: 0;
+}
+
+/* Show the table header rows and set all cells to display: table-cell */ 
+.my-custom-breakpoint td,
+.my-custom-breakpoint th,
+.my-custom-breakpoint tbody th,
+.my-custom-breakpoint tbody td,
+.my-custom-breakpoint thead td,
+.my-custom-breakpoint thead th {
+	display: table-cell;
+	margin: 0;
+}
+/* Hide the labels in each cell */ 
+.my-custom-breakpoint td .ui-table-cell-label,
+.my-custom-breakpoint th .ui-table-cell-label { 
+	display: none;
+}

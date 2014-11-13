@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="msapplication-tap-highlight" content="no" />
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+        <title>RTU APP (PURCHASE)</title>
+		
+		<link rel="stylesheet" type="text/css" href="css/themes/default/jquery.mobile-1.4.3.min.css"/>
+		<link rel="stylesheet" type="text/css" href="css/main.css" />
+		
+		<script type="text/javascript" src="js/jquery.js"></script>
+		<script type="text/javascript" src="js/jquery.mobile-1.4.3.js"></script>
+		<script type="text/javascript" src="cordova.js"></script>
+		<script type="text/javascript" src="js/cloud.js"></script>
+		
+		<script type="text/javascript">
+			$(document).on("pagecreate","#purchase_page",function(){
+				document.addEventListener("deviceready",onDeviceReady,false);
+				writeAll();
+			});
+		</script>
+		
+    </head>
+    <body onload = "init()">
+        <div data-role ="page" id = "purchase_page" >
+			
+			<script type = "text/javascript">
+			
+			var cust_id;
+			var db;
+			
+			function init()
+			{
+				
+				//document.addEventListener("deviceready",onDeviceReady,false);
+				
+			}
+			
+			
+			$(":mobile-pagecontainer").on("pagecontainerchange", function(event, ui)
+				{
+					//alert("Page container change (Login Page)!");
+					document.addEventListener("deviceready",onDeviceReady,false);
+					
+					$(":mobile-pagecontainer").unbind();
+				}
+			);
+			
+			/*
+			<option value="gunda-0.6(eur/kg)">gunda-0.6(eur/kg)</option>
+						<option value="melba-0.5(eur/kg)">melba-0.5(eur/kg)</option>
+						<option value="solara-0.7(eur/kg)">solara-0.7(eur/kg)</option>
+						<option value="rosalind-0.4(eur/kg)">rosalind-0.4(eur/kg)</option>
+			*/
+			
+			function onDeviceReady()
+			{
+				//Device ready
+				
+				var url = $.mobile.activePage[0].baseURI;
+				//alert(url);
+				cust_id = url.split("?")[1];
+				cust_id = cust_id.replace("cust_id=","");
+				
+				//alert("Klienta_id "+cust_id);
+				/*
+				id = url.split("?")[1];
+				id = id.replace("id=","");
+			
+				*/
+				
+				loadProducts();
+			}
+			
+			function loadProducts()
+			{
+				alert("DB!");
+				db = window.openDatabase("Database","1.0", "DB", 2*1024*1024);
+				db.transaction(getProducts, errorCB);
+			}
+			
+			function successCB()
+			{
+				alert("Local DB SUCCESS!");
+			}
+			
+			function getProducts(tx)
+			{
+				alert("Getting Products!");
+				
+				tx.executeSql('SELECT * FROM SETTINGS', [], function(tx, result)
+				{
+					var len = result.rows.length;
+					alert("Garums: "+len);
+					
+					for (var i=0;i<len;i++)
+					{
+						
+						var val =result.rows.item(i).val;
+						alert(val);
+						
+						
+						$("#prod").append('<option value="'+val+'">'+val+'</option>');
+					}
+					
+					$("#prod").trigger('create');
+				}
+				,errorCB);
+			}
+			
+			function errorCB(err)
+			{
+				alert("Local DB ERROR! "+err.code+" "+err.message);
+			}
+			
+			function submitForm()
+			{
+				var prod = $("[name='produkts']").val();
+				alert("Prece - "+ prod);
+				
+				var amount= $("[name='daudzums']").val();
+				alert("Daudzums - "+amount);
+				
+				var uname = window.localStorage.getItem("uname");
+				
+				var price_kg = prod.split("-")[1];
+				price_kg = price_kg.replace("(eur/kg)","");
+				alert("Cena KG " +price_kg);
+				
+				var product = prod.split("-")[0];
+				
+				var price = parseFloat(amount) * parseFloat(price_kg);
+				//var price = 0;
+				
+				alert("Pirkuma cena - "+price +" (EUR)");
+				
+				//alert("Pati pievienosana tiks uzstaisita nedaudz velak!");
+				
+				var json = '{"cust_id":"'+cust_id+'","product":"'+product+'","amount":"'+amount+'","price_kg":"'+price_kg+'","price":"'+price+'","uname":"'+uname+'"}';
+				var cloud = new Cloud();
+				
+				$("#subm").button('disable');	
+				
+				$("#loading").append('Loading...');
+				cloud.insertNew("purchases", json, insertSuccess,insertFail);
+				
+				return false;
+			}
+			
+			function insertSuccess()
+			{
+				$("#loading").empty();
+				alert("Success");
+				
+				$("#insert_form").empty();
+				$("#back").append('<br><a href="#" id="back_b" data-rel="back" class="ui-btn">Atpakaļ</a>');
+				$('#back_b').buttonMarkup({ icon: "back" });
+				
+			}
+			
+			function insertFail()
+			{
+				$("#loading").empty();
+				alert("Failed!");
+				$("#subm").button('enable');	
+			}
+		
+			
+		</script>
+		
+		
+			<div data-role = "header" id = "head" data-theme="b" class="center-wrapper" data-position="fixed">
+				Pirkuma lapa
+			</div>
+			<div data-role="content" id="cont">
+			
+				<div id="loading">
+				
+				</div>
+				
+				<div id = "text">
+				
+				</div>
+				
+				<form method = "POST" id="insert_form"  onSubmit="return submitForm()">
+				
+					<label for="produkts">Suga(kg):</label>
+					<select name ="produkts" id="prod">
+						<option value="gunda-0.6(eur/kg)">gunda-0.6(eur/kg)</option>
+					</select>
+					
+					<label for="slider-step">Daudzums(kg):</label>
+					<input type="range" name="daudzums" id="daudz" value="10" min="0" max="100" step="0.5" />
+					<input type="submit" id="subm" value="submit">
+				</form>
+				
+				<div id="back">
+				
+				</div>
+				
+				
+				<br>
+				<ul data-role="listview" id = "list" data-inset="true">
+					
+				</ul>	
+					
+				
+			</div>
+			<div data-role="footer" data-theme="b" class="center-wrapper" data-position="fixed">
+				MADE BY KRISTAPS
+			</div>
+		</div>
+    </body>
+</html>

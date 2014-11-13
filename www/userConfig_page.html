@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="msapplication-tap-highlight" content="no" />
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+        <title>RTU APP (USER_CONFIG)</title>
+		
+		<link rel="stylesheet" type="text/css" href="css/themes/default/jquery.mobile-1.4.3.min.css"/>
+		<link rel="stylesheet" type="text/css" href="css/main.css" />
+		
+		<script type="text/javascript" src="js/jquery.js"></script>
+		<script type="text/javascript" src="js/jquery.mobile-1.4.3.js"></script>
+		<script type="text/javascript" src="cordova.js"></script>
+		
+		<script type="text/javascript">
+			$(document).on("pagecreate","#users_page",function(){
+				document.addEventListener("deviceready",onDeviceReady,false);
+				
+			});
+		</script>
+		
+    </head>
+    <body onload = "init()">
+        <div data-role ="page" id = "userConfig_page" >
+			
+			<script type="text/javascript" src="js/App42-all-2.7.2.min.js"></script>
+			
+			<script type = "text/javascript">
+			
+			var uid;
+			var uname;
+			
+			function init()
+			{
+				
+				//document.addEventListener("deviceready",onDeviceReady,false);
+				
+			}
+			
+			
+			$(":mobile-pagecontainer").on("pagecontainerchange", function(event, ui)
+				{
+					//alert("Page container change (Login Page)!");
+					document.addEventListener("deviceready",onDeviceReady,false);
+					
+					$(":mobile-pagecontainer").unbind();
+				}
+			);
+			
+			
+			
+			function onDeviceReady()
+			{
+				//Device ready
+				var url = $.mobile.activePage[0].baseURI;
+				
+				//alert(url);
+				
+				uid = url.split("?")[1];
+				uid = uid.replace("uid=","");
+				//alert(uid);
+				
+				uname = url.split("?")[2];
+				uname = uname.replace("uname=","");
+				//alert(uname);
+				
+				//$("#loading").append('Loading...');
+				
+				//alert(uid);
+				//getUserData(uid);
+				
+				//$("#cont").append("User id: "+uid);
+				
+				//addForm();
+				
+				addForm();
+				
+			}
+			
+			function addForm()
+			{
+				//Jobs
+				$("#other").append('Vards ' + uname  +'<br>');
+				$("#other").append('<br><a href="jobsConfig_page.html?uid='+uid+'"'+
+				'id="toJobs" data-transition="slide" class="ui-btn">Darbi</a>');
+				$("#toJobs").trigger('create');
+				$('#toJobs').buttonMarkup({ icon: "gear" });
+				
+				//Delete
+				$("#other").append('<a href="#" class="ui-btn" id="deletebutton">Izdzest Darbinieku</a> ');
+				$("#deletebutton").trigger('create');
+				$('#deletebutton').buttonMarkup({ icon: "delete" });
+				$('#deletebutton').click(function() {
+					deleteUser();
+				});
+				
+				/*
+				$("#other").append('<a href="#" class="ui-btn" id="deletebutton">Izdzest Darbinieku</a> ');
+				$("#deletebutton").trigger('create');
+				
+				$('#deletebutton').click(function() {
+					deleteUser();
+				});
+				
+				$("#other").append(
+					'<form method = "POST" id="insert_form"  onSubmit="return submitFormJob()">'+
+					'	<input name="street" type="text" placeholder="Iela">'+
+					'	<input type="submit" value="submit">'+
+					'</form>'
+				);
+				*/
+			}
+			
+		
+			
+			function insertJob(id,street)
+			{
+				App42.initialize("502be55974e895468d622c50d90904f29a35fdc629a65fa4a5dbac277f3f95f2", "12067aed18194826ce0938ff5b970eb2d59a168cec6cb1b1296a266ab827106b");  
+
+				var storageService  = new App42Storage(); 
+				
+				var dbName = "demo";
+				var collectionName = "jobs";
+				var jSon = '{"uid":"'+ id +'","street":"'+street+'"}';
+				
+				storageService.insertJSONDocument(dbName, collectionName, jSon, 
+					{
+						success:function(object)
+						{
+							alert("Darbs "+street+" iela izveidots!");
+							$("#loading").empty();
+							
+						},
+						error:function(error)
+						{
+							alert("Error! "+ error);
+							$("#loading").empty();
+						}
+					}
+				);			
+			}
+			
+			
+			
+			function deleteUser()
+			{
+				alert("Delete user id: "+uid);
+				
+				deleteFromCloud(uid);
+			}
+			
+			function deleteFromCloud(id)
+			{
+				var r = confirm("Vai velies izdzest ierakstu?");
+				
+				if (r == true)
+				{
+					$("#loading").append('Loading...');
+					App42.initialize("502be55974e895468d622c50d90904f29a35fdc629a65fa4a5dbac277f3f95f2", "12067aed18194826ce0938ff5b970eb2d59a168cec6cb1b1296a266ab827106b");  
+
+					var storageService  = new App42Storage(); 
+					
+					var dbName = "demo";
+					var name = "users";
+					
+					//alert("DZESS...");
+					
+					storageService.deleteDocumentById(dbName, name,id,{    
+					success: function(object)   
+					{   
+						$("#loading").empty();
+						$("#other").empty();
+						$("#other").append('Darbinieks tika veiksmigi izdzests!');
+						$("#other").append('<br><a href="#" data-rel="back" class="ui-btn">Atpakaļ</a>');
+						
+						
+						
+					},    
+					error: function(error) {  
+							alert("Error! "+error);
+						}    
+					});   
+				}
+			}
+			
+			function submitFormJob()
+			{
+				//alert("SUBMIT!");
+				var street = $("[name='street']").val();
+				
+				$("#loading").append('Loading...');
+				insertJob(uid,street);
+				
+				return false;
+			}
+					
+			
+		</script>
+		
+		
+			<div data-role = "header" data-theme="b" class="center-wrapper" data-position="fixed">
+				Darbinieka Parametri
+			</div>
+			<div data-role="content" id="cont">
+				<div id="loading">
+				</div>
+				<div id="other">
+				
+				</div>
+				
+					
+				
+			</div>
+			<div data-role="footer" data-theme="b" class="center-wrapper" data-position="fixed">
+				MADE BY KRISTAPS
+			</div>
+		</div>
+    </body>
+</html>
