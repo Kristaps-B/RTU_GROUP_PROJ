@@ -48,6 +48,15 @@
 				}
 			);
 			
+			function addNameToFooter()
+			{
+				var uname = window.localStorage.getItem("uname");
+				
+				//Add to footer
+				$("#foot").append(uname);
+				$("#foot").trigger('create');
+			}
+			
 			function onDeviceReady()
 			{
 				//Device ready
@@ -66,6 +75,8 @@
 				$("[name='flat-until']").textinput('disable');	
 				
 				$("input[type='radio']").bind( "change", typeChange);
+				
+				addNameToFooter();
 			}
 			
 			function typeChange()
@@ -99,6 +110,23 @@
 			}
 			
 			
+			function parbaude(street)
+			{
+			
+				if (street.length<4 )
+				{
+					alert("Ielas nosaukums ir par īsu!");
+					return false;
+				}
+				if (street.length >12)
+				{
+					alert("Ielas nosaukums ir par garu!");
+					return false;
+				}
+				return true;
+			}
+			
+			
 			function submitForm()
 			{
 				var street = $("[name='street']").val();
@@ -107,6 +135,8 @@
 				var houseUntil;
 				var flatFrom;
 				var flatUntil;
+				
+				if (parbaude(street) == false) return false;
 				
 				var checked = $("#insert_form input[type='radio']:checked").val();
 				if (checked == "choice-1")
@@ -132,10 +162,10 @@
 				}
 				
 				var json = '{"uid":"'+uid+'","street":"'+street+'","hFrom":"'+houseFrom+'","hUntil":"'+houseUntil+'","fFrom":"'+flatFrom+'","fUntil":"'+flatUntil+'"}';
-				alert(json);
+				//alert(json);
 				var cloud = new Cloud();
 				$("#subm").button('disable');					
-				$("#loading").append('Loading...');
+				$("#loading").append('Ielade..');
 				cloud.insertNew("jobs", json, insertSuccess,insertFail);
 				
 				return false;
@@ -143,7 +173,6 @@
 			
 			function insertSuccess()
 			{
-				alert("Success!");
 				$("#loading").empty();
 				
 				$("#insert_form").empty();
@@ -153,7 +182,7 @@
 			
 			function insertFail()
 			{
-				alert("Fail!");
+				alert("Neizdevās nodibināt savienojumu ar internetu!");
 				$("#loading").empty();
 			}
 			
@@ -206,8 +235,9 @@
 					
 				</ul>	
 			</div>
-			<div data-role="footer" data-theme="b" class="center-wrapper" data-position="fixed">
-				MADE BY KRISTAPS
+			<div data-role="footer" id="foot" data-theme="b"  class="ui-bar" data-position="fixed">
+				<a href="#" id="back_b" data-rel="back" data-role="button" data-icon="back"></a>
+				<a href="main_page.html" id="back_b" data-role="button" data-icon="home"></a>
 			</div>
 		</div>
     </body>

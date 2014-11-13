@@ -97,7 +97,6 @@
 			{
 				if (errorCode == 2601)
 				{
-					alert("Tev nav darba!");
 					$("#list").empty().append('<li data-icon="plus"><a href="insertJob_page.html?uid='+id+'"'+
 					'data-role="button" data-transition="slide">Pievienot Jaunu'+
 					'</a></li>');
@@ -105,11 +104,21 @@
 				}
 				else
 				{
-					alert("Error! "+ error);
+					alert("Neizdevās nodibināt savienojumu ar internetu!");
+					addReload();
 				}
 				
 				
 				$("#loading").empty();
+			}
+			
+			function addNameToFooter()
+			{
+				var uname = window.localStorage.getItem("uname");
+				
+				//Add to footer
+				$("#foot").append(uname);
+				$("#foot").trigger('create');
 			}
 			
 			function onDeviceReady()
@@ -121,24 +130,31 @@
 				uid = uid.replace("uid=","");
 				
 				
-				$("#loading").append('Loading...');
 				
+				
+				addNameToFooter();
 				
 				id = uid;
 				
+				loadAll(id);
+			}
+			
+			function loadAll()
+			{
 				//writeAll(id);
+				$("#loading").empty().append('Ielade...');
 				var cloud = new Cloud();
 				cloud.findAllByKey("jobs","uid",id, success, fail);
 			}
 			
 			function deleteClicked(job_id)
 			{
-				var r = confirm("Vai velies izdzest darbu?");
+				var r = confirm("Vai tiešām velāties izdzēst šo darbu?");
 				
 				if (r == true)
 				{
 					var cloud = new Cloud();
-					$("#loading").append('Loading...');
+					$("#loading").append('Ielade...');
 					cloud.deleteByID("jobs", job_id, deleteSuccess,deleteFailed);
 				}
 				
@@ -146,7 +162,7 @@
 			
 			function deleteSuccess()
 			{
-				alert("Success!");
+				alert("Darbs tika veiksmīgi izdzēsts!");
 				$("#loading").empty();
 				//writeAll(id);
 				var cloud = new Cloud();
@@ -157,15 +173,22 @@
 			{
 				alert("Failed!");
 				$("#loading").empty();
+				
 			}
 			
+			
+			function addReload()
+			{
+				$("#loading").append('<a href="#" id = "reload_b" data-role="button"   onclick="writeAll()">Pārladēt</a>');
+				$('#reload_b').buttonMarkup({ icon: "refresh" });
+			}
 		
 			
 		</script>
 		
 		
 			<div data-role = "header" data-theme="b" class="center-wrapper" data-position="fixed">
-				Darbi
+				DARBI
 			</div>
 			<div data-role="content" id="cont">
 				<div id="loading">
@@ -178,8 +201,9 @@
 					
 				
 			</div>
-			<div data-role="footer" data-theme="b" class="center-wrapper" data-position="fixed">
-				MADE BY KRISTAPS
+			<div data-role="footer" id="foot" data-theme="b"  class="ui-bar" data-position="fixed">
+				<a href="#" id="back_b" data-rel="back" data-role="button" data-icon="back"></a>
+				<a href="main_page.html" id="back_b" data-role="button" data-icon="home"></a>
 			</div>
 		</div>
     </body>

@@ -38,6 +38,7 @@ C:\Android_apps\kartupelu_parvaldnieks_2014\kartupelu_parvaldnieks_2014\platform
 C:\Android_apps\kartupelu_parvaldnieks_2014\kartupelu_parvaldnieks_2014\platforms\android\assets\www\flat_page.html \
 C:\Android_apps\kartupelu_parvaldnieks_2014\kartupelu_parvaldnieks_2014\platforms\android\assets\www\icon.png \
 C:\Android_apps\kartupelu_parvaldnieks_2014\kartupelu_parvaldnieks_2014\platforms\android\assets\www\img \
+C:\Android_apps\kartupelu_parvaldnieks_2014\kartupelu_parvaldnieks_2014\platforms\android\assets\www\importJob_page.html \
 C:\Android_apps\kartupelu_parvaldnieks_2014\kartupelu_parvaldnieks_2014\platforms\android\assets\www\index.html \
 C:\Android_apps\kartupelu_parvaldnieks_2014\kartupelu_parvaldnieks_2014\platforms\android\assets\www\insertComment_page.html \
 C:\Android_apps\kartupelu_parvaldnieks_2014\kartupelu_parvaldnieks_2014\platforms\android\assets\www\insertFlat_page.html \

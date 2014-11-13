@@ -28,7 +28,7 @@
 			
 			
 			
-			<script type = "text/javascript">
+		<script type = "text/javascript">
 			
 			function init()
 			{
@@ -36,7 +36,7 @@
 				//document.addEventListener("deviceready",onDeviceReady,false);
 				
 			}
-			
+	
 			function isInCloud(un, pass)
 			{
 				//alert("To cloud!");
@@ -48,7 +48,7 @@
 				var collectionName = "users";
 				
 				var key = "uname";
-				var value = un
+				var value = un;
 				
 				
 				//alert("2");
@@ -59,6 +59,7 @@
 						
 						alert("Darbinieks "+un+" jau pastav!");
 						$("#loading").empty();
+						$("#subm").button('enable');
 						
 					},    
 					error: function(error) { 
@@ -70,16 +71,20 @@
 						if (appErrorCode == 2601)
 						{
 							insertUser(un, pass);
+							
 							$("#loading").empty();
 						}
 						else
 						{
 							alert("Makoņa kļūda: " +error);
 							$("#loading").empty();
+							$("#subm").button('enable');
 						}
 					}    
 				}); 
 			}
+			
+		
 			
 			
 			$(":mobile-pagecontainer").on("pagecontainerchange", function(event, ui)
@@ -91,13 +96,22 @@
 				}
 			);
 			
-			
+			function addNameToFooter()
+			{
+				var uname = window.localStorage.getItem("uname");
+				
+				//Add to footer
+				$("#foot").append(uname);
+				$("#foot").trigger('create');
+			}
 			
 			function onDeviceReady()
 			{
 				//Device ready
 				//alert("LOGIN");
+				addNameToFooter();
 			}
+			
 			
 			function insertUser(un, pass)
 			{
@@ -115,15 +129,20 @@
 						{
 							alert("User "+un+" created!");
 							$("#insert_form").remove();
-							$("#cont").append("User "+un+" created!");
-							$("#cont").append('<br><a href="#" data-rel="back" class="ui-btn">Atpakaļ</a>');
+							$("#cont").append("Darbinieks "+un+" tika veiksmigi izveidots!");
+							
+							$("#cont").append('<br><a href="#" data-rel="back" id="btnBack" class="ui-btn">Atpakaļ</a>');
+							$('#btnBack').buttonMarkup({ icon: "back" });
+							
 							$("#loading").empty();
 							
 						},
 						error:function(error)
 						{
-							alert("Error! "+ error);
+							alert("Neizdevās nodibināt savienojumu ar internetu!");
 							$("#loading").empty();
+							
+							//$("#subm").button('enable');
 						}
 					}
 				);			
@@ -138,18 +157,40 @@
 				var pass1 = $("[name='password1']").val();
 				var pass2 = $("[name='password2']").val();
 				
+				if (parbaude(un, pass1, pass2) == false) return false;
+				
+				$("#subm").button('disable');
+				
+			
+				$("#loading").append('Ielade...');
+				var hash = SHA1(pass1);
+				isInCloud(un, hash);
+				
+				
+				return false;
+			}
+			
+			
+			function parbaude(un, pass1, pass2)
+			{
+			
 				if (pass1 != pass2)
 				{
 					alert("Paroles nesakrit");
+					return false;
 				}
-				else
+			
+				if (un.length <4 || pass1.length<4)
 				{
-					$("#loading").append('Loading...');
-					var hash = SHA1(pass1);
-					isInCloud(un, hash);
+					alert("Parole vai lietotājvārds ir par īsu!");
+					return false;
 				}
-				
-				return false;
+				if (un.length >12 || pass1.length>16)
+				{
+					alert("Parole vai lietotājvārds ir par īsu!");
+					return false;
+				}
+				return true;
 			}
 			
 			
@@ -158,17 +199,18 @@
 		
 		
 			<div data-role = "header" data-theme="b" class="center-wrapper" data-position="fixed">
-				IZVEIDOT JAUNU DARBINIEKU
+				JAUNS DARBINIEKS
 			</div>
 			<div data-role="content" id="cont">
 				<div id="loading">
 				
 				</div>
+				
 				<form method = "POST" id="insert_form"  onSubmit="return submitForm()">
 					<input name="uname" type="text" placeholder="Lietotājvārds">
 					<input name="password1" type="password" placeholder="Parole">
 					<input name="password2" type="password" placeholder="Parole">
-					<input type="submit" value="submit">
+					<input type="submit" id ="subm" value="Izveidot" >
 				</form>
 				<br>
 				
@@ -177,8 +219,9 @@
 					
 				</ul>	
 			</div>
-			<div data-role="footer" data-theme="b" class="center-wrapper" data-position="fixed">
-				MADE BY KRISTAPS
+			<div data-role="footer" id="foot" data-theme="b"  class="ui-bar" data-position="fixed">
+				<a href="#" id="back_b" data-rel="back" data-role="button" data-icon="back"></a>
+				<a href="main_page.html" id="back_b" data-role="button" data-icon="home"></a>
 			</div>
 		</div>
     </body>

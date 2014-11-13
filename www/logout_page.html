@@ -46,12 +46,20 @@
 				}
 			);
 			
+			function addNameToFooter()
+			{
+				var uname = window.localStorage.getItem("uname");
+				
+				//Add to footer
+				$("#foot").append(uname);
+				$("#foot").trigger('create');
+			}
 			
 			
 			function onDeviceReady()
 			{
 				//Device ready
-				
+				addNameToFooter();
 			}
 			
 			
@@ -63,29 +71,36 @@
 			
 			function logout()
 			{
-				window.localStorage.removeItem("uname");
-				alert('Jus veiksmigi izrakstijaties');
+				var r = confirm("Vai vēlāties izrakstīties?");
 				
-				$("#logoutbutton").remove();
-				$("#cont").append('Jus veiksmigi izrakstijaties');
-				$("#cont").append('<br><a href="#" data-rel="back" class="ui-btn">Atpakaļ</a>');
+				if (r == true)
+				{
+					window.localStorage.removeItem("uname");
+					alert('Jus veiksmigi izrakstijaties');
+					
+					$("#logoutbutton").remove();
+					$("#cont").append('Jus veiksmigi izrakstijaties');
+					$("#cont").append('<br><a href="#" data-rel="back" id="btnBack" class="ui-btn">Atpakaļ</a>');
+					$('#btnBack').buttonMarkup({ icon: "back" });
+				}
 			}
 			
 		</script>
 		
 		
 			<div data-role = "header" data-theme="b" class="center-wrapper" data-position="fixed">
-				Izrakstišanas
+				IZRAKSTĪŠANAS
 			</div>
 			<div data-role="content" id="cont">
 				
 				<br>
-				<a href="#" data-role="button" id="logoutbutton">Izrakstities</a> 
+				<a href="#" data-role="button" data-icon="power" id="logoutbutton">Izrakstities</a> 
 					
 				
 			</div>
-			<div data-role="footer" data-theme="b" class="center-wrapper" data-position="fixed">
-				MADE BY KRISTAPS
+			<div data-role="footer" id="foot" data-theme="b"  class="ui-bar" data-position="fixed">
+					<a href="#" id="back_b" data-rel="back" data-role="button" data-icon="back"></a>
+					<a href="main_page.html" id="back_b" data-role="button" data-icon="home"></a>
 			</div>
 		</div>
     </body>

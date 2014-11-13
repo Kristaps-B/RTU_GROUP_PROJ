@@ -5,7 +5,7 @@
         <meta name="format-detection" content="telephone=no" />
         <meta name="msapplication-tap-highlight" content="no" />
         <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
-        <title>RTU APP (LOGIN)</title>
+        <title>RTU APP (IMPORT_JOB)</title>
 		
 		<link rel="stylesheet" type="text/css" href="css/themes/default/jquery.mobile-1.4.3.min.css"/>
 		<link rel="stylesheet" type="text/css" href="css/main.css" />
@@ -13,25 +13,24 @@
 		<script type="text/javascript" src="js/jquery.js"></script>
 		<script type="text/javascript" src="js/jquery.mobile-1.4.3.js"></script>
 		<script type="text/javascript" src="cordova.js"></script>
-		<script type="text/javascript" src="js/App42-all-2.7.2.min.js"></script>
-		<script type="text/javascript" src="js/sha1.js"></script>
 		<script type="text/javascript" src="js/cloud.js"></script>
 		
 		<script type="text/javascript">
-			$(document).on("pagecreate","#login_page",function(){
+			$(document).on("pagecreate","#jobs_page",function(){
 				document.addEventListener("deviceready",onDeviceReady,false);
+				writeAll();
 			});
 		</script>
 		
     </head>
     <body onload = "init()">
-        <div data-role ="page" id = "login_page" >
+        <div data-role ="page" id = "jobs_page" >
 			
-			
+			<script type="text/javascript" src="js/App42-all-2.7.2.min.js"></script>
 			
 			<script type = "text/javascript">
 			
-			
+			var id;
 			
 			function init()
 			{
@@ -50,6 +49,43 @@
 				}
 			);
 			
+			function success(response)
+			{
+				var htmlstring = "";
+				//alert(response.length)
+				$("#loading").empty();
+				
+				for (i=0; i<response.length;i++)
+				{
+					
+					if (response[i].su != "true")
+					{
+						htmlstring += '<li data-icon="user">' + '<a href="#" onclick="importJobs(\''+response[i]._id.$oid+'\')" '+
+						'data-role="button" >'+
+						response[i].uname +
+						'</a></li>';
+					}
+						
+				}
+				$("#list").append(htmlstring);
+				
+				$("#list").listview("refresh");
+			}
+			
+			function importJobs(u_id)
+			{
+				alert("IMPORTE: "+u_id);
+			}
+			
+			function fail(errorCode)
+			{
+					alert("Neizdevās nodibināt savienojumu ar internetu!");
+					addReload();
+				
+				
+				$("#loading").empty();
+			}
+			
 			function addNameToFooter()
 			{
 				var uname = window.localStorage.getItem("uname");
@@ -62,94 +98,81 @@
 			function onDeviceReady()
 			{
 				//Device ready
-				//alert("LOGIN");
+				var url = $.mobile.activePage[0].baseURI;
+				
+				var uid = url.split("?")[1];
+				uid = uid.replace("uid=","");
+				
+				
 				addNameToFooter();
+				
+				id = uid;
+				
+				loadAll();
 			}
 			
-			
-			
-			function submitForm()
+			function loadAll()
 			{
-				//alert("SUBMIT!");
-				var un = $("[name='uname']").val();
-				var pass = $("[name='password']").val();
-				
-				if (parbaude(un, pass) == false) return false;
-				
-				$("#subm").button('disable');
-				
-				var hash = SHA1(pass);
-				
+				//writeAll(id);
 				$("#loading").empty().append('Ielade...');
-				
 				var cloud = new Cloud();
-				cloud.isUserInCloud(un, hash, loginSuccess, loginFailed);
-				
-				return false;
+				cloud.findAll("users", success, fail);
 			}
 			
-			function parbaude(un, pass)
+			/*
+			function deleteClicked(job_id)
 			{
-				if (un.length <4 || pass.length<4)
+				var r = confirm("Vai tiešām velāties izdzēst šo darbu?");
+				
+				if (r == true)
 				{
-					alert("Parole vai lietotājvārds ir par īsu!");
-					return false;
+					var cloud = new Cloud();
+					$("#loading").append('Ielade...');
+					cloud.deleteByID("jobs", job_id, deleteSuccess,deleteFailed);
 				}
-				if (un.length >12 || pass.length>16)
-				{
-					alert("Parole vai lietotājvārds ir par īsu!");
-					return false;
-				}
-				return true;
+				
 			}
 			
-			function loginSuccess(un, isSuperUser, id)
+			function deleteSuccess()
 			{
-
-				window.localStorage.setItem("uname", un);
-				window.localStorage.setItem("su", isSuperUser);
-				window.localStorage.setItem("id", id);
+				alert("Darbs tika veiksmīgi izdzēsts!");
+				$("#loading").empty();
+				//writeAll(id);
+				var cloud = new Cloud();
+				cloud.findAllByKey("jobs","uid",id, success, fail);
 				
-				$("#subm").button('enable');
-				
+			}
+			function deleteFailed()
+			{
+				alert("Failed!");
 				$("#loading").empty();
 				
-				$("#login_form").remove();
-				alert("Sveiks, "+un+"!");
-				$("#cont").append("Sveiks, "+un+"!");
-				
-				$("#cont").append('<br><a href="#" data-rel="back" id="btnBack" class="ui-btn">Atpakaļ</a>');
-				$('#btnBack').buttonMarkup({ icon: "back" });
-
 			}
+			*/
 			
-			function loginFailed()
+			function addReload()
 			{
-				$("#loading").empty();
-				alert("Nepareizi pierakstīšanās dati!");
-				$("#subm").button('enable');
+				$("#loading").append('<a href="#" id = "reload_b" data-role="button"   onclick="writeAll()">Pārladēt</a>');
+				$('#reload_b').buttonMarkup({ icon: "refresh" });
 			}
+		
 			
 		</script>
 		
 		
 			<div data-role = "header" data-theme="b" class="center-wrapper" data-position="fixed">
-				PIERAKSTĪŠANAS
+				DARBU IMPORTĒŠANA
 			</div>
 			<div data-role="content" id="cont">
 				<div id="loading">
 				
 				</div>
-				<form method = "POST" id = "login_form"  onSubmit="return submitForm()">
-					<input name="uname" type="text" placeholder="Lietotājvārds">
-					<input name="password" type="password" placeholder="Parole">
-					<input type="submit" id="subm" value="Pierakstities" >
-				</form>
-				
 				
 				<ul data-role="listview" id = "list" data-inset="true">
 					
 				</ul>	
+					
+				
 			</div>
 			<div data-role="footer" id="foot" data-theme="b"  class="ui-bar" data-position="fixed">
 				<a href="#" id="back_b" data-rel="back" data-role="button" data-icon="back"></a>

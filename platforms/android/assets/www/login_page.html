@@ -50,13 +50,20 @@
 				}
 			);
 			
-			
+			function addNameToFooter()
+			{
+				var uname = window.localStorage.getItem("uname");
+				
+				//Add to footer
+				$("#foot").append(uname);
+				$("#foot").trigger('create');
+			}
 			
 			function onDeviceReady()
 			{
 				//Device ready
 				//alert("LOGIN");
-				
+				addNameToFooter();
 			}
 			
 			
@@ -67,14 +74,33 @@
 				var un = $("[name='uname']").val();
 				var pass = $("[name='password']").val();
 				
+				if (parbaude(un, pass) == false) return false;
+				
+				$("#subm").button('disable');
+				
 				var hash = SHA1(pass);
 				
-				$("#loading").append('Loading...');
+				$("#loading").empty().append('Ielade...');
 				
 				var cloud = new Cloud();
 				cloud.isUserInCloud(un, hash, loginSuccess, loginFailed);
 				
 				return false;
+			}
+			
+			function parbaude(un, pass)
+			{
+				if (un.length <4 || pass.length<4)
+				{
+					alert("Parole vai lietotājvārds ir par īsu!");
+					return false;
+				}
+				if (un.length >12 || pass.length>16)
+				{
+					alert("Parole vai lietotājvārds ir par īsu!");
+					return false;
+				}
+				return true;
 			}
 			
 			function loginSuccess(un, isSuperUser, id)
@@ -84,19 +110,24 @@
 				window.localStorage.setItem("su", isSuperUser);
 				window.localStorage.setItem("id", id);
 				
+				$("#subm").button('enable');
+				
 				$("#loading").empty();
 				
 				$("#login_form").remove();
 				alert("Sveiks, "+un+"!");
 				$("#cont").append("Sveiks, "+un+"!");
-				$("#cont").append('<br><a href="#" data-rel="back" class="ui-btn">Atpakaļ</a>');
+				
+				$("#cont").append('<br><a href="#" data-rel="back" id="btnBack" class="ui-btn">Atpakaļ</a>');
+				$('#btnBack').buttonMarkup({ icon: "back" });
 
 			}
 			
 			function loginFailed()
 			{
 				$("#loading").empty();
-				alert("Nepareiz lietotājvārds vai parole!");
+				alert("Nepareizi pierakstīšanās dati!");
+				$("#subm").button('enable');
 			}
 			
 		</script>
@@ -112,17 +143,17 @@
 				<form method = "POST" id = "login_form"  onSubmit="return submitForm()">
 					<input name="uname" type="text" placeholder="Lietotājvārds">
 					<input name="password" type="password" placeholder="Parole">
-					<input type="submit" value="submit">
+					<input type="submit" id="subm" value="Pierakstities" >
 				</form>
-				<br>
 				
 				
 				<ul data-role="listview" id = "list" data-inset="true">
 					
 				</ul>	
 			</div>
-			<div data-role="footer" data-theme="b" class="center-wrapper" data-position="fixed">
-				MADE BY KRISTAPS
+			<div data-role="footer" id="foot" data-theme="b"  class="ui-bar" data-position="fixed">
+				<a href="#" id="back_b" data-rel="back" data-role="button" data-icon="back"></a>
+				<a href="main_page.html" id="back_b" data-role="button" data-icon="home"></a>
 			</div>
 		</div>
     </body>

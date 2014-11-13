@@ -46,19 +46,27 @@
 				}
 			);
 			
-			
+			function addNameToFooter()
+			{
+				var uname = window.localStorage.getItem("uname");
+				
+				//Add to footer
+				$("#foot").append(uname);
+				$("#foot").trigger('create');
+			}
 			
 			function onDeviceReady()
 			{
 				//Device ready
-				$("#loading").append('Loading...');
+				
+				addNameToFooter();
 				writeAll();
 			}
 			
 			function writeAll()
 			{
 				
-				
+				$("#loading").empty().append('Ielade...');
 				var htmlstring='';
 				
 				App42.initialize("502be55974e895468d622c50d90904f29a35fdc629a65fa4a5dbac277f3f95f2", "12067aed18194826ce0938ff5b970eb2d59a168cec6cb1b1296a266ab827106b");  
@@ -101,8 +109,26 @@
 						},
 						error:function(error)
 						{
-							alert("Error! "+ error);
-							$("#loading").empty();
+							
+							
+							var storageObj = JSON.parse(error);  
+							var appErrorCode = storageObj.app42Fault.appErrorCode;  
+							
+							if (appErrorCode == 2608)
+							{
+								$("#list").append('<li data-icon="plus"><a href="insertUser_page.html"'+
+								'data-role="button" data-transition="slide">Pievienot Jaunu'+
+								'</a></li>');
+								$("#list").listview("refresh");
+							}
+							else
+							{
+								alert("Neizdevās nodibināt savienojumu ar internetu!");
+								$("#loading").empty();
+								addReload();
+							}
+							
+							
 						}
 					}
 				);
@@ -113,7 +139,11 @@
 			}
 			
 			
-			
+			function addReload()
+			{
+				$("#loading").append('<a href="#" id = "reload_b" data-role="button"   onclick="writeAll()">Pārladēt</a>');
+				$('#reload_b').buttonMarkup({ icon: "refresh" });
+			}
 			
 			
 			
@@ -122,7 +152,7 @@
 		
 		
 			<div data-role = "header" data-theme="b" class="center-wrapper" data-position="fixed">
-				Darbinieki
+				DARBINIEKI
 			</div>
 			<div data-role="content" id="cont">
 				<div id="loading">
@@ -135,8 +165,9 @@
 					
 				
 			</div>
-			<div data-role="footer" data-theme="b" class="center-wrapper" data-position="fixed">
-				MADE BY KRISTAPS
+			<div data-role="footer" id="foot" data-theme="b"  class="ui-bar" data-position="fixed">
+				<a href="#" id="back_b" data-rel="back" data-role="button" data-icon="back"></a>
+				<a href="main_page.html" id="back_b" data-role="button" data-icon="home"></a>
 			</div>
 		</div>
     </body>

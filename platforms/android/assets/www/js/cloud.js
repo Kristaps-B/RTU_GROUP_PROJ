@@ -1,3 +1,5 @@
+var errorLoading =""
+
 function Cloud(){
 	this.A_KEY = "502be55974e895468d622c50d90904f29a35fdc629a65fa4a5dbac277f3f95f2";
 	this.S_KEY = "12067aed18194826ce0938ff5b970eb2d59a168cec6cb1b1296a266ab827106b";
