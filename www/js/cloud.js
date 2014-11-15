@@ -294,9 +294,6 @@ Cloud.prototype.updateByKey = function(collName, k, v, jsD, success, failed)
 	var value = v;
 	var jsonDoc = jsD;
 	
-	alert("Key: "+key);
-	alert("Value: "+value);
-	
 	storageService.updateDocumentByKeyValue(dbName, collectionName, key, value, jsonDoc,{    
 		success: function(object)   
 		{   
@@ -304,10 +301,7 @@ Cloud.prototype.updateByKey = function(collName, k, v, jsD, success, failed)
 
 		},    
 		error: function(error) {  
-			 var storageObj = JSON.parse(error);  
-			var appErrorCode = storageObj.app42Fault.appErrorCode;  
-			alert("Error code: "+appErrorCode);
-			failed();
+			failed(error);
 		}    
 	}); 			
 	

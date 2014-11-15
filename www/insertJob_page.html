@@ -110,22 +110,6 @@
 			}
 			
 			
-			function parbaude(street)
-			{
-			
-				if (street.length<4 )
-				{
-					alert("Ielas nosaukums ir par īsu!");
-					return false;
-				}
-				if (street.length >12)
-				{
-					alert("Ielas nosaukums ir par garu!");
-					return false;
-				}
-				return true;
-			}
-			
 			
 			function submitForm()
 			{
@@ -136,7 +120,7 @@
 				var flatFrom;
 				var flatUntil;
 				
-				if (parbaude(street) == false) return false;
+				
 				
 				var checked = $("#insert_form input[type='radio']:checked").val();
 				if (checked == "choice-1")
@@ -161,6 +145,8 @@
 					flatUntil = $("[name='flat-until']").val();
 				}
 				
+				if (parbaude(street ,houseFrom, houseUntil, flatFrom, flatUntil) == false) return false;
+				
 				var json = '{"uid":"'+uid+'","street":"'+street+'","hFrom":"'+houseFrom+'","hUntil":"'+houseUntil+'","fFrom":"'+flatFrom+'","fUntil":"'+flatUntil+'"}';
 				//alert(json);
 				var cloud = new Cloud();
@@ -169,6 +155,60 @@
 				cloud.insertNew("jobs", json, insertSuccess,insertFail);
 				
 				return false;
+			}
+			
+			function parbaude(street, houseFrom, houseUntil, flatFrom, flatUntil)
+			{
+				if (street.length<4 )
+				{
+					alert("Ielas nosaukums ir par īsu!");
+					return false;
+				}
+				if (street.length >12)
+				{
+					alert("Ielas nosaukums ir par garu!");
+					return false;
+				}
+			
+				if (!houseFrom || !houseUntil || !flatFrom || !flatUntil)
+				{
+					alert("Tukss obligatais ievades lauks!");
+					return false;
+				}
+				
+				if (houseFrom !="NULL" && parseFloat(houseFrom)<1)
+				{
+					alert("Nepareiz majas numurs!");
+					return false;
+				}
+				if (houseUntil !="NULL" && parseFloat(houseUntil)<1)
+				{
+					alert("Nepareiz majas numurs!");
+					return false;
+				}
+				if (flatFrom !="NULL" && parseFloat(flatFrom)<1)
+				{
+					alert("Nepareiz dzīvokļa numurs!");
+					return false;
+				}
+				if (flatUntil !="NULL" && parseFloat(flatUntil)<1)
+				{
+					alert("Nepareiz dzīvokļa numurs!");
+					return false;
+				}
+				
+				if (houseFrom !="NULL" && houseUntil !="NULL" && parseFloat(houseFrom)>=parseFloat(houseUntil) )
+				{
+					alert("Nepareiza māju no-līdz kārtībā!");
+					return false;
+				}
+				if (flatFrom !="NULL" && flatUntil !="NULL" && parseFloat(flatFrom)>=parseFloat(flatUntil) )
+				{
+					alert("Nepareiza māju no-līdz kārtībā!");
+					return false;
+				}
+				
+				return true;
 			}
 			
 			function insertSuccess()

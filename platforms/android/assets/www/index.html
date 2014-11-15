@@ -45,7 +45,7 @@
 					} );
 					
 					startDB();
-					$("#loading_1").append('Ielade...');
+					
 					loadSettings();
 				}
 				
@@ -77,6 +77,7 @@
 				
 				function loadSettings()
 				{
+					$("#loading_1").empty().append('Ielade...');
 					var cloud = new Cloud();
 					
 					cloud.findAll("settings",findSuccess,findFailed);

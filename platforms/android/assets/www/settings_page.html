@@ -28,6 +28,8 @@
 			
 			<script type = "text/javascript">
 			
+			var settingsList;
+			
 			function init()
 			{
 				
@@ -45,12 +47,20 @@
 				}
 			);
 			
+			function addNameToFooter()
+			{
+				var uname = window.localStorage.getItem("uname");
+				
+				//Add to footer
+				$("#foot").append(uname);
+				$("#foot").trigger('create');
+			}
 			
 			
 			function onDeviceReady()
 			{
 				//Device ready
-				
+				addNameToFooter();
 				writeAll();
 			}
 			
@@ -68,13 +78,19 @@
 			
 			function success(response)
 			{
-				var htmlstring = "";
+				
 				//alert(response.length)
 				
 				$("#loading").empty();
 				
+				settingsList = response;
 				
-				
+				writeProducts(response);
+			}
+			
+			function writeProducts(response)
+			{
+				var htmlstring = "";
 				for (i=0; i<response.length;i++)
 				{
 					if (response[i].opc_v=="produkts")
@@ -91,6 +107,30 @@
 				$("#list_1").append('<li data-icon="plus"><a href='+
 				'"insertProduct_page.html"'+
 				'data-role="button"   data-transition="slide">Pievienot Jaunu preci</a>'
+				);
+				
+				$("#list_1").listview("refresh");
+			}
+			
+			function writeStatuss(response)
+			{
+				var htmlstring = "";
+				for (i=0; i<response.length;i++)
+				{
+					if (response[i].opc_v=="statuss")
+					{
+						htmlstring += '<li data-icon="delete">' + '<a href="#"'+
+						'data-role="button" onclick="deleteClicked(\''+response[i]._id.$oid+'\')">'+
+						response[i].statuss +
+						'</a></li>';
+					}
+				}
+				
+				$("#list_1").empty().append(htmlstring);
+				
+				$("#list_1").append('<li data-icon="plus"><a href='+
+				'"#"'+
+				'data-role="button"   data-transition="slide">Jauns Statuss</a>'
 				);
 				
 				$("#list_1").listview("refresh");
@@ -146,7 +186,32 @@
 			}
 			
 			
+			function click_1()
+			{
+				if (!settingsList)
+				{
+					;
+				}
+				else
+				{
+					alert("Clicked 1");
+					writeProducts(settingsList)
+				}
+			}
 			
+			
+			function click_2()
+			{
+				if (!settingsList)
+				{
+					
+				}
+				else
+				{
+					alert("Clicked 2");
+					writeStatuss(settingsList);
+				}
+			}
 			
 			
 			
@@ -155,22 +220,32 @@
 		
 		
 			<div data-role = "header" data-theme="b" class="center-wrapper" data-position="fixed">
-				Opcijas
+				OPCIJAS
 			</div>
 			<div data-role="content" id="cont">
+				
+			<div data-role="navbar">
+				<ul>
+					<li><a href="#" class="ui-btn-active ui-state-persist" onclick ="click_1()">Produkti</a></li>
+					<li><a href="#"  onclick ="click_2()">Statusi</a></li>
+				</ul>
+			</div><!-- /navbar -->
+
+			
 				<div id="loading">
 				
 				</div>
 				
-				<b>Produkti</b>
+				
 				<ul data-role="listview" id = "list_1" data-inset="true">
 					
 				</ul>	
 					
 				
 			</div>
-			<div data-role="footer" data-theme="b" class="center-wrapper" data-position="fixed">
-				MADE BY KRISTAPS
+			<div data-role="footer" id="foot" data-theme="b"  class="ui-bar" data-position="fixed">
+				<a href="#" id="back_b" data-rel="back" data-role="button" data-icon="back"></a>
+				<a href="main_page.html" id="back_b" data-role="button" data-icon="home"></a>
 			</div>
 		</div>
     </body>

@@ -31,6 +31,8 @@
 			<script type = "text/javascript">
 			
 			var id;
+			var jobsList;
+			var editedI;
 			
 			function init()
 			{
@@ -58,7 +60,7 @@
 				for (i=0; i<response.length;i++)
 				{
 					
-					if (response[i].su != "true")
+					if (response[i].su != "true" && response[i]._id.$oid != id)
 					{
 						htmlstring += '<li data-icon="user">' + '<a href="#" onclick="importJobs(\''+response[i]._id.$oid+'\')" '+
 						'data-role="button" >'+
@@ -74,13 +76,76 @@
 			
 			function importJobs(u_id)
 			{
-				alert("IMPORTE: "+u_id);
+				//alert("IMPORTE: "+u_id);
+				
+				$("#list").empty();
+				$("#loading").empty().append('Ielade...');
+				var cloud = new Cloud();
+				cloud.findAllByKey("jobs","uid",u_id, jobsSuccess, jobsFailed);
+				
+			}
+			
+			function jobsSuccess(rez)
+			{
+				jobsList = rez;
+				
+				
+				editedI = 0;
+				$("#loading").empty().append('Ielade '+editedI+'...');
+				var cloud = new Cloud();
+				var jsnDoc = '{"uid":"'+id+'","street":"'+jobsList[editedI].street+'","hFrom":"'+jobsList[editedI].hFrom+'","hUntil":"'+jobsList[editedI].hUntil+'","fFrom":"'+jobsList[editedI].fFrom+'","fUntil":"'+jobsList[editedI].fUntil+'"}';
+				cloud.updateByKey("jobs","uid", jobsList[editedI].uid ,jsnDoc,editedSuccess,editedFailed);
+			}
+			
+			function editedSuccess()
+			{
+				if (editedI<jobsList.length-2)
+				{
+					editedI++;
+					$("#loading").empty().append('Ielade '+editedI+'...');
+					var cloud = new Cloud();
+					var jsnDoc = '{"uid":"'+id+'","street":"'+jobsList[editedI].street+'","hFrom":"'+jobsList[editedI].hFrom+'","hUntil":"'+jobsList[editedI].hUntil+'","fFrom":"'+jobsList[editedI].fFrom+'","fUntil":"'+jobsList[editedI].fUntil+'"}';
+					cloud.updateByKey("jobs","uid", jobsList[editedI].uid ,jsnDoc,editedSuccess,editedFailed);
+					
+				}
+				else
+				{
+					$("#loading").empty();
+					alert("Visi darbi tika veiksmīgi importēti!");
+					
+					$("#back").append('<br><a href="#" id="back_b" data-rel="back" class="ui-btn">Atpakaļ</a>');
+					$('#back_b').buttonMarkup({ icon: "back" });
+				}
+			}
+			
+			function editedFailed()
+			{
+				$("#loading").empty();
+				alert("Neizdevās nodibināt savienojumu ar internetu!");
+			}
+			
+			function jobsFailed(err)
+			{
+			
+				var storageObj = JSON.parse(err);  
+				var appErrorCode = storageObj.app42Fault.appErrorCode;  
+				
+				if (appErrorCode == 2601)
+				{
+					$("#loading").empty();
+					alert('Nav ko importēt!');
+				}
+				else
+				{
+					$("#loading").empty();
+					alert("Neizdevās nodibināt savienojumu ar internetu!");
+				}
 			}
 			
 			function fail(errorCode)
 			{
-					alert("Neizdevās nodibināt savienojumu ar internetu!");
-					addReload();
+				alert("Neizdevās nodibināt savienojumu ar internetu!");
+				addReload();
 				
 				
 				$("#loading").empty();
@@ -119,36 +184,6 @@
 				cloud.findAll("users", success, fail);
 			}
 			
-			/*
-			function deleteClicked(job_id)
-			{
-				var r = confirm("Vai tiešām velāties izdzēst šo darbu?");
-				
-				if (r == true)
-				{
-					var cloud = new Cloud();
-					$("#loading").append('Ielade...');
-					cloud.deleteByID("jobs", job_id, deleteSuccess,deleteFailed);
-				}
-				
-			}
-			
-			function deleteSuccess()
-			{
-				alert("Darbs tika veiksmīgi izdzēsts!");
-				$("#loading").empty();
-				//writeAll(id);
-				var cloud = new Cloud();
-				cloud.findAllByKey("jobs","uid",id, success, fail);
-				
-			}
-			function deleteFailed()
-			{
-				alert("Failed!");
-				$("#loading").empty();
-				
-			}
-			*/
 			
 			function addReload()
 			{
@@ -171,7 +206,10 @@
 				<ul data-role="listview" id = "list" data-inset="true">
 					
 				</ul>	
-					
+				
+				<div id="back">
+				
+				</div>				
 				
 			</div>
 			<div data-role="footer" id="foot" data-theme="b"  class="ui-bar" data-position="fixed">

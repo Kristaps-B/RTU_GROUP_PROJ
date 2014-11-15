@@ -130,7 +130,7 @@
 						if (flatsList[j]._id.$oid === customerList[i].flat_id)
 						{
 							//alert("FLAT: "+flatsList[j].street_name+ " customer "+customerList[i]._id.$oid);
-							val =  flatsList[j].street_name+"/"+customerList[i]._id.$oid;
+							val =  flatsList[j].street_name+" "+flatsList[j].num+"/"+customerList[i]._id.$oid;
 							streetsList.push(val);
 							
 						}
