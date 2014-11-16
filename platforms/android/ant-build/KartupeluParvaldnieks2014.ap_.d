@@ -44,6 +44,7 @@ C:\Android_apps\kartupelu_parvaldnieks_2014\kartupelu_parvaldnieks_2014\platform
 C:\Android_apps\kartupelu_parvaldnieks_2014\kartupelu_parvaldnieks_2014\platforms\android\assets\www\insertFlat_page.html \
 C:\Android_apps\kartupelu_parvaldnieks_2014\kartupelu_parvaldnieks_2014\platforms\android\assets\www\insertJob_page.html \
 C:\Android_apps\kartupelu_parvaldnieks_2014\kartupelu_parvaldnieks_2014\platforms\android\assets\www\insertProduct_page.html \
+C:\Android_apps\kartupelu_parvaldnieks_2014\kartupelu_parvaldnieks_2014\platforms\android\assets\www\insertStatuss_page.html \
 C:\Android_apps\kartupelu_parvaldnieks_2014\kartupelu_parvaldnieks_2014\platforms\android\assets\www\insertUser_page.html \
 C:\Android_apps\kartupelu_parvaldnieks_2014\kartupelu_parvaldnieks_2014\platforms\android\assets\www\jobsConfig_page.html \
 C:\Android_apps\kartupelu_parvaldnieks_2014\kartupelu_parvaldnieks_2014\platforms\android\assets\www\jobs_page.html \

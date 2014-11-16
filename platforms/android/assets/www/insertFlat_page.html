@@ -56,6 +56,46 @@
 				}
 			);
 			
+			function addNameToFooter()
+			{
+				var uname = window.localStorage.getItem("uname");
+				
+				//Add to footer
+				$("#foot").append(uname);
+				$("#foot").trigger('create');
+			}
+			
+			function createForm()
+			{
+				/*
+				<input name="street" type="text" placeholder="Iela">
+				<input name="house" type="number" placeholder="Māja">
+				<input type="submit" value="Apstiprināt">
+				*/
+				
+				//Ja ir noteikts māju daudzums no lidz, bet nav noteikts dzīvokļu daudzums
+				if (h_n!="NULL" && h_u!="NULL" && f_n=="NULL" && f_u=="NULL")
+				{
+					$("#insert_form").append('Māja:<input type="range" name="house" id="house" value="'+h_n+'" min="'+h_n+'" max="'+h_u+'" step="1" />');
+					$("#insert_form").append('<input name="flat" type="number" placeholder="Dzīvoklis">');
+				}
+				//Ja visa iela
+				if (h_n=="NULL" && h_u=="NULL" && f_n=="NULL" && f_u=="NULL")
+				{
+					$("#insert_form").append('<input name="house" type="text" placeholder="Iela">');
+					$("#insert_form").append('<input name="flat" type="number" placeholder="Dzīvoklis">');
+				}
+				//Ja viena iela un daļa no dzivokļiem
+				if (h_n!="NULL" && h_u=="NULL" && f_n!="NULL" && f_u!="NULL")
+				{
+					$("#insert_form").append('<input name="house" type="number" placeholder="Māja">');
+					$("#insert_form").append('Dzīvoklis:<input type="range" name="flat" id="flat" value="'+f_n+'" min="'+f_n+'" max="'+f_u+'" step="1" />');
+				}
+				
+				$("#insert_form").append('<input type="submit" value="Apstiprināt">');
+				$("#insert_form").trigger('create');
+			}
+			
 			function onDeviceReady()
 			{
 				//Device ready
@@ -84,15 +124,20 @@
 				f_u = url.split("?")[6];
 				f_u = f_u.replace("f_u=","");
 				
+				/*
 				alert(h_n);
 				alert(h_u);
 				alert(f_n);
 				alert(f_u);
+				*/
 				
 				//alert(street_name);
 				//alert(street_id);
 				$("[name='street']").val(street_name);
 				$("[name='street']").textinput('disable');	
+				createForm();
+				
+				addNameToFooter();
 				
 			}
 			
@@ -107,8 +152,10 @@
 
 				json = '{"street_id":"'+street_id+'","street_name":"'+street+'","num":"'+house_n+'-'+flat_n+'"}';
 
-				$("#loading").append('Loading...');
+				$("#loading").empty().append('Ielade 1...');
 				var cloud = new Cloud();
+				
+				$("#subm").button('disable');	
 				
 				var num = house_n+'-'+flat_n;
 				var q =cloud.queryFromTwo("street_name", street, "num", num);
@@ -120,21 +167,24 @@
 			
 			function isInSuccess()
 			{
-				alert("Tadas adreses nepastav. Pievieno jaunu...");
+				//alert("Tadas adreses nepastav. Pievieno jaunu...");
+				$("#loading").empty().append('Ielade 2...');
 				var cloud = new Cloud();
 				cloud.insertNew("flats", json, insertSuccess,insertFail);
 			}
 			
 			function isInFailed()
 			{
-				alert("Tada adrese jau pastav!");
+				alert("Izveidotā adrese jau pastav!");
 				$("#loading").empty();
 			}
 			
 			function insertSuccess(resp)
 			{
 				
-				alert("Pievieno jaunu klientu....");
+				//alert("Pievieno jaunu klientu....");
+				
+				$("#loading").empty().append('Ielade 2...');
 				
 				var json_flat = '{"flat_id":"'+resp._id.$oid+'","street_name":"'+street_name+'"}';
 				
@@ -151,21 +201,22 @@
 			{
 				$("#loading").empty();
 				
-				alert("Client created!");
+				alert("Jaunais dzīvoklis un tā klients tika izveidots!");
 				
 				$("#insert_form").empty();
-				$("#back").append('<br><a href="#" data-rel="back" class="ui-btn">Atpakaļ</a>');
+				$("#back").append('<br><a href="#" id="back_b" data-rel="back" class="ui-btn">Atpakaļ</a>');
+				$('#back_b').buttonMarkup({ icon: "back" });
 			}
 			
 			function insertClientFailed()
 			{
-				alert("Failed!");
+				alert("Neizdevās nodibināt savienojumu ar internetu!");
 			}
 			
 			function insertFail(err)
 			{
 				$("#loading").empty();
-				alert("Error: "+err);
+				alert("Neizdevās nodibināt savienojumu ar internetu!");
 			}
 			
 			
@@ -182,9 +233,6 @@
 				</div>
 				<form method = "POST" id="insert_form"  onSubmit="return submitForm()">
 					<input name="street" type="text" placeholder="Iela">
-					<input name="house" type="number" placeholder="Māja">
-					<input name="flat" type="number" placeholder="Dzīvoklis">
-					<input type="submit" value="Apstiprināt">
 				</form>
 				<br>
 				
@@ -196,8 +244,9 @@
 					
 				</ul>	
 			</div>
-			<div data-role="footer" data-theme="b" class="center-wrapper" data-position="fixed">
-				MADE BY KRISTAPS
+			<div data-role="footer" id="foot" data-theme="b"  class="ui-bar" data-position="fixed">
+				<a href="#" id="back_b" data-rel="back" data-role="button" data-icon="back"></a>
+				<a href="main_page.html" id="back_b" data-role="button" data-icon="home"></a>
 			</div>
 		</div>
     </body>

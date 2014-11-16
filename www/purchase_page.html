@@ -55,6 +55,15 @@
 						<option value="rosalind-0.4(eur/kg)">rosalind-0.4(eur/kg)</option>
 			*/
 			
+			function addNameToFooter()
+			{
+				var uname = window.localStorage.getItem("uname");
+				
+				//Add to footer
+				$("#foot").append(uname);
+				$("#foot").trigger('create');
+			}
+			
 			function onDeviceReady()
 			{
 				//Device ready
@@ -70,25 +79,26 @@
 				id = id.replace("id=","");
 			
 				*/
+				addNameToFooter();
 				
 				loadProducts();
 			}
 			
 			function loadProducts()
 			{
-				alert("DB!");
+				//alert("DB!");
 				db = window.openDatabase("Database","1.0", "DB", 2*1024*1024);
 				db.transaction(getProducts, errorCB);
 			}
 			
 			function successCB()
 			{
-				alert("Local DB SUCCESS!");
+				//alert("Local DB SUCCESS!");
 			}
 			
 			function getProducts(tx)
 			{
-				alert("Getting Products!");
+				//alert("Getting Products!");
 				
 				tx.executeSql('SELECT * FROM SETTINGS', [], function(tx, result)
 				{
@@ -99,12 +109,14 @@
 					{
 						
 						var val =result.rows.item(i).val;
-						alert(val);
+						//alert(val);
 						
 						
 						$("#prod").append('<option value="'+val+'">'+val+'</option>');
+						
 					}
 					
+					$('#prod').selectmenu('refresh', true);
 					$("#prod").trigger('create');
 				}
 				,errorCB);
@@ -112,29 +124,29 @@
 			
 			function errorCB(err)
 			{
-				alert("Local DB ERROR! "+err.code+" "+err.message);
+				alert("Lokālās datubāzes kļūda! "+err.code+" "+err.message);
 			}
 			
 			function submitForm()
 			{
 				var prod = $("[name='produkts']").val();
-				alert("Prece - "+ prod);
+				//alert("Prece - "+ prod);
 				
 				var amount= $("[name='daudzums']").val();
-				alert("Daudzums - "+amount);
+				//alert("Daudzums - "+amount);
 				
 				var uname = window.localStorage.getItem("uname");
 				
 				var price_kg = prod.split("-")[1];
 				price_kg = price_kg.replace("(eur/kg)","");
-				alert("Cena KG " +price_kg);
+				//alert("Cena KG " +price_kg);
 				
 				var product = prod.split("-")[0];
 				
 				var price = parseFloat(amount) * parseFloat(price_kg);
 				//var price = 0;
 				
-				alert("Pirkuma cena - "+price +" (EUR)");
+				//alert("Pirkuma cena - "+price +" (EUR)");
 				
 				//alert("Pati pievienosana tiks uzstaisita nedaudz velak!");
 				
@@ -143,7 +155,7 @@
 				
 				$("#subm").button('disable');	
 				
-				$("#loading").append('Loading...');
+				$("#loading").append('Ielade...');
 				cloud.insertNew("purchases", json, insertSuccess,insertFail);
 				
 				return false;
@@ -152,9 +164,9 @@
 			function insertSuccess()
 			{
 				$("#loading").empty();
-				alert("Success");
 				
 				$("#insert_form").empty();
+				$("#back").append('Pirkums tika veiksmīgi izveidots!');
 				$("#back").append('<br><a href="#" id="back_b" data-rel="back" class="ui-btn">Atpakaļ</a>');
 				$('#back_b').buttonMarkup({ icon: "back" });
 				
@@ -172,7 +184,7 @@
 		
 		
 			<div data-role = "header" id = "head" data-theme="b" class="center-wrapper" data-position="fixed">
-				Pirkuma lapa
+				PIRKUMS
 			</div>
 			<div data-role="content" id="cont">
 			
@@ -186,13 +198,14 @@
 				
 				<form method = "POST" id="insert_form"  onSubmit="return submitForm()">
 				
-					<label for="produkts">Suga(kg):</label>
+					<label for="produkts">Pirkums:</label>
 					<select name ="produkts" id="prod">
-						<option value="gunda-0.6(eur/kg)">gunda-0.6(eur/kg)</option>
+						
 					</select>
 					
 					<label for="slider-step">Daudzums(kg):</label>
 					<input type="range" name="daudzums" id="daudz" value="10" min="0" max="100" step="0.5" />
+					
 					<input type="submit" id="subm" value="submit">
 				</form>
 				
@@ -208,8 +221,9 @@
 					
 				
 			</div>
-			<div data-role="footer" data-theme="b" class="center-wrapper" data-position="fixed">
-				MADE BY KRISTAPS
+			<div data-role="footer" id="foot" data-theme="b"  class="ui-bar" data-position="fixed">
+				<a href="#" id="back_b" data-rel="back" data-role="button" data-icon="back"></a>
+				<a href="main_page.html" id="back_b" data-role="button" data-icon="home"></a>
 			</div>
 		</div>
     </body>

@@ -30,6 +30,8 @@
 			
 			<script type = "text/javascript">
 			
+			var id;
+			
 			function init()
 			{
 				
@@ -103,11 +105,16 @@
 			{
 				if (errorCode == 2601)
 				{
-					alert("Tev nav darba!");
+					//alert("Tev nav darba!");
+					$("#back").append("Tev nav darba, vari atpūsties!");
+					$("#back").append('<br><a href="#" id="back_b" data-rel="back" class="ui-btn">Atpakaļ</a>');
+					$('#back_b').buttonMarkup({ icon: "back" });
+					
 				}
 				else
 				{
-					alert("Error! "+ error);
+					alert("Neizdevās nodibināt savienojumu ar internetu!");
+					addReload();
 				}
 				
 				
@@ -122,15 +129,39 @@
 				var uid = url.split("?")[1];
 				uid = uid.replace("uid=","");
 				
+				//alert("0");
+				addNameToFooter();
 				
-				$("#loading").append('Loading...');
+				$("#loading").append('Ielade...');
+				//alert("1");
 				
-				
-				var id = uid;
-				
+				id = uid;
+				//alert("2");
+				loadAll();
+			}
+			
+			function loadAll()
+			{
+				//alert("3");
 				//writeAll(id);
 				var cloud = new Cloud();
 				cloud.findAllByKey("jobs","uid",id, success, fail);
+			}
+			
+			
+			function addNameToFooter()
+			{
+				var uname = window.localStorage.getItem("uname");
+				
+				//Add to footer
+				$("#foot").append(uname);
+				$("#foot").trigger('create');
+			}
+			
+			function addReload()
+			{
+				$("#loading").append('<a href="#" id = "reload_b" data-role="button"   onclick="loadAll()">Pārladēt</a>');
+				$('#reload_b').buttonMarkup({ icon: "refresh" });
 			}
 			
 		
@@ -139,10 +170,14 @@
 		
 		
 			<div data-role = "header" data-theme="b" class="center-wrapper" data-position="fixed">
-				Darbi
+				DARBI
 			</div>
 			<div data-role="content" id="cont">
 				<div id="loading">
+				
+				</div>
+				
+				<div id="back">
 				
 				</div>
 				
@@ -152,8 +187,9 @@
 					
 				
 			</div>
-			<div data-role="footer" data-theme="b" class="center-wrapper" data-position="fixed">
-				MADE BY KRISTAPS
+			<div data-role="footer" id="foot" data-theme="b"  class="ui-bar" data-position="fixed">
+				<a href="#" id="back_b" data-rel="back" data-role="button" data-icon="back"></a>
+				<a href="main_page.html" id="back_b" data-role="button" data-icon="home"></a>
 			</div>
 		</div>
     </body>

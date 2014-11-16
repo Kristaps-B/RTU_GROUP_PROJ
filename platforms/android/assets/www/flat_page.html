@@ -53,7 +53,14 @@
 			);
 			
 			
-			
+			function addNameToFooter()
+			{
+				var uname = window.localStorage.getItem("uname");
+				
+				//Add to footer
+				$("#foot").append(uname);
+				$("#foot").trigger('create');
+			}
 			
 			
 			function onDeviceReady()
@@ -77,7 +84,9 @@
 				flat = url.split("?")[4];
 				flat = flat.replace("flat=","");
 				
-				$("#text").empty().append(street+" iela "+house+" - "+flat);
+				addNameToFooter()
+				
+				$("#text").empty().append("<b>"+street+" iela "+house+" - "+flat+"</b>");
 				
 				customer();
 				
@@ -85,7 +94,7 @@
 			
 			function customer()
 			{
-				$("#loading").append('Loading...');
+				$("#loading").empty().append('Ielade klientu...');
 				var cloud = new Cloud();
 				//alert(id);
 				cloud.findAllByKey("customers", "flat_id", flat_id, success, failed);
@@ -93,7 +102,7 @@
 			
 			function success(resp)
 			{
-				alert("Customer Found!");
+				$("#loading").empty().append('Ielade komentarus...');
 				$("#loading").empty();
 				cust_id = resp[0]._id.$oid
 				//alert("CUST ID "+id);
@@ -105,8 +114,7 @@
 			{
 				if (err_code == 2601)
 				{
-					alert("Klients priekš šīs adreses nepastav!");
-					alert("Veido jaunu klientu...");
+					$("#loading").empty().append("Ielade klientu veidošana!");
 					
 					var json_flat = '{"flat_id":"'+flat_id+'","street_name":"'+street+'"}';
 				
@@ -124,7 +132,7 @@
 			{
 				$("#loading").empty();
 				
-				alert("Client created!");
+				
 				cust_id = resp[0]._id.$oid
 				//alert("CUST ID "+id);
 				
@@ -133,7 +141,7 @@
 			
 			function insertClientFailed()
 			{
-				alert("Failed!");
+				alert("Neizdevās nodibināt savienojumu ar internetu!");
 			}
 			
 			function insertMoreElements()
@@ -145,7 +153,7 @@
 				//Ievieto komentaru
 				
 				var cloud = new Cloud();
-				$("#loading").append('Loading...');
+				$("#loading").append('Ielade komentārus...');
 				cloud.findAllByKey ("comments","cust_id",cust_id,findSuccess,findFailed);
 				
 			}
@@ -154,13 +162,12 @@
 			function findSuccess(response)
 			{
 				$("#loading").empty();
-				alert("SUCCESS");
 				var htmlstring = "";
 				for (i=0; i<response.length;i++)
 				{
 					
 					{
-						htmlstring += '<div data-role="collapsible"><h4>'+response[i].uname+': '+response[i]._$createdAt+'</h4>' + 
+						htmlstring += '<div data-role="collapsible"><h4>'+response[i].uname+'<br> '+response[i]._$createdAt+'</h4>' + 
 							
 							'<p>Status: '+response[i].status+'<br>'+
 							'Novertejums: '+response[i].score+'<br>'+
@@ -177,12 +184,12 @@
 					'data-role="button"   data-transition="slide">Pievienot Komentaru</a>'
 				).listview("refresh");
 				
-				$("#text").append('<br><a href="purchase_page.html?cust_id='+cust_id+'"'+
+				$("#text").append('<a href="purchase_page.html?cust_id='+cust_id+'"'+
 				'id="toPurch" data-transition="slide" class="ui-btn">Pievienot Pirkumu</a>');
 				$("#toPurch").trigger('create');
 				$('#toPurch').buttonMarkup({ icon: "shop" });
 				
-				$("#text").append('<br><a href="changeCustomer_page.html?flat_id='+flat_id+'"'+
+				$("#text").append('<a href="changeCustomer_page.html?flat_id='+flat_id+'"'+
 				' id="toChange" data-transition="slide" class="ui-btn">Nomainīt Klientu</a>');
 				$("#toChange").trigger('create');
 				$('#toChange').buttonMarkup({ icon: "gear" });
@@ -196,11 +203,11 @@
 				$("#loading").empty();
 				if (err == 2601)
 				{
-					alert("NOTHING IN!");
+					//alert("NOTHING IN!");
 				}
 				else
 				{
-					alert("Error! "+ err);
+					alert("Neizdevās nodibināt savienojumu ar internetu!");
 				}
 				
 				
@@ -209,12 +216,12 @@
 					'data-role="button"   data-transition="slide">Pievienot Komentaru</a>'
 				).listview("refresh");
 				
-				$("#text").append('<br><a href="purchase_page.html?cust_id='+cust_id+'"'+
+				$("#text").append('<a href="purchase_page.html?cust_id='+cust_id+'"'+
 				'id="toPurch" data-transition="slide" class="ui-btn">Pievienot Pirkumu</a>');
 				$("#toPurch").trigger('create');
 				$('#toPurch').buttonMarkup({ icon: "shop" });
 				
-				$("#text").append('<br><a href="changeCustomer_page.html?flat_id='+flat_id+'"'+
+				$("#text").append('<a href="changeCustomer_page.html?flat_id='+flat_id+'"'+
 				'id="toChange" data-transition="slide" class="ui-btn">Nomainīt Klientu</a>');
 				$("#toChange").trigger('create');
 				$('#toChange').buttonMarkup({ icon: "gear" });
@@ -227,7 +234,7 @@
 		
 		
 			<div data-role = "header" id = "head" data-theme="b" class="center-wrapper" data-position="fixed">
-				Dzivokla lapa
+				DZĪVOKLIS
 			</div>
 			<div data-role="content" id="cont">
 			
@@ -240,17 +247,17 @@
 				</div>
 				
 				<div id ="comments" data-inset="true">
-					<b>Komentāri:</b>
+					
 				</div>
-				<br>
 				<ul data-role="listview" id = "list" data-inset="true">
 					
 				</ul>	
 					
 				
 			</div>
-			<div data-role="footer" data-theme="b" class="center-wrapper" data-position="fixed">
-				MADE BY KRISTAPS
+			<div data-role="footer" id="foot" data-theme="b"  class="ui-bar" data-position="fixed">
+				<a href="#" id="back_b" data-rel="back" data-role="button" data-icon="back"></a>
+				<a href="main_page.html" id="back_b" data-role="button" data-icon="home"></a>
 			</div>
 		</div>
     </body>

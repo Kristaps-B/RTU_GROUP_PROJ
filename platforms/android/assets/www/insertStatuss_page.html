@@ -5,7 +5,7 @@
         <meta name="format-detection" content="telephone=no" />
         <meta name="msapplication-tap-highlight" content="no" />
         <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
-        <title>RTU APP (INSERT_PRODUCT)</title>
+        <title>RTU APP (INSERT_STATUSS)</title>
 		
 		<link rel="stylesheet" type="text/css" href="css/themes/default/jquery.mobile-1.4.3.min.css"/>
 		<link rel="stylesheet" type="text/css" href="css/main.css" />
@@ -67,18 +67,13 @@
 			
 			function submitForm()
 			{
+				var statuss = $("[name='statuss']").val();
 				
-				
-				var kultura = $("[name='kultura']").val();
-				var suga = $("[name='suga']").val();
-				var cena_kg = $("[name='cena_kg']").val();
-				var daudzums = $("[name='daudzums']").val();
-				
-				if (parbaude(kultura, suga, cena_kg, daudzums) == false) return false;
+				if (parbaude(statuss) == false) return false;
 				
 				$("#subm").button('disable');	
 				
-				var json = '{"opc_v":"produkts","kultura":"'+kultura+'","suga":"'+suga+'","cena_kg":"'+cena_kg+'","daudzums":"'+daudzums+'"}';
+				var json = '{"opc_v":"statuss","statuss":"'+statuss+'"}';
 				var cloud = new Cloud();
 				
 				$("#subm").button('disable');	
@@ -89,28 +84,22 @@
 				return false;
 			}
 			
-			function parbaude(kultura, suga, cena_kg, daudzums)
+			function parbaude(statuss)
 			{
-				if (!kultura || !suga || !cena_kg || !daudzums)
+				if (!statuss)
 				{
-					alert("Kāds no ievaddatiem ir tukš");
+					alert("Statuss ir tukš!");
 					return false;
 				}
 			
-				if (kultura.length <4 || suga.length<4)
+				if (statuss.length <4)
 				{
-					alert("Produkta kultūra vai suga ir par īsu!");
+					alert("Statuss ir par īsu!");
 					return false;
 				}
-				if (kultura.length >12 || suga.length>16)
+				if (statuss.length >24)
 				{
-					alert("Produkta kultūra vai suga ir par garu!");
-					return false;
-				}
-				
-				if (cena_kg<0.01 || daudzums<1)
-				{
-					alert("Produkta cena vai daudzums ir par mazu!");
+					alert("Statuss ir par garu!");
 					return false;
 				}
 				
@@ -142,7 +131,7 @@
 		
 		
 			<div data-role = "header" data-theme="b" class="center-wrapper" data-position="fixed">
-				JAUNS PRODUKTS
+				JAUNS STATUSS
 			</div>
 			<div data-role="content" id="cont">
 				<div id="loading">
@@ -150,10 +139,7 @@
 				</div>
 				
 				<form method = "POST" id="insert_form"  onSubmit="return submitForm()">
-					<input name="kultura" type="text" placeholder="kultura">
-					<input name="suga" type="text" placeholder="suga">
-					<input name="cena_kg" type="number" placeholder="cena_kg">
-					<input name="daudzums" type="number" placeholder="daudzums">
+					<input name="statuss" type="text" placeholder="statuss">
 					<input type="submit" id="subm" value="Apstiprināt">
 				</form>
 				

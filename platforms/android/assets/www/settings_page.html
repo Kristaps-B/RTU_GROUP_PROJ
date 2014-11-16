@@ -97,7 +97,7 @@
 					{
 						htmlstring += '<li data-icon="delete">' + '<a href="#"'+
 						'data-role="button" onclick="deleteClicked(\''+response[i]._id.$oid+'\')">'+
-						response[i].kultura +' '+response[i].suga+
+						'kultūra: '+response[i].kultura +'<br> suga: '+response[i].suga+
 						'</a></li>';
 					}
 				}
@@ -106,7 +106,7 @@
 				
 				$("#list_1").append('<li data-icon="plus"><a href='+
 				'"insertProduct_page.html"'+
-				'data-role="button"   data-transition="slide">Pievienot Jaunu preci</a>'
+				'data-role="button"   data-transition="slide">Pievienot Jaunu</a>'
 				);
 				
 				$("#list_1").listview("refresh");
@@ -129,8 +129,8 @@
 				$("#list_1").empty().append(htmlstring);
 				
 				$("#list_1").append('<li data-icon="plus"><a href='+
-				'"#"'+
-				'data-role="button"   data-transition="slide">Jauns Statuss</a>'
+				'"insertStatuss_page.html"'+
+				'data-role="button"   data-transition="slide">Pievienot Jaunu</a>'
 				);
 				
 				$("#list_1").listview("refresh");
@@ -138,12 +138,12 @@
 			
 			function deleteClicked(setting_id)
 			{
-				var r = confirm("Vai velies izdzest darbu?");
+				var r = confirm("Vai velies izdzest šo standarta izvēli?");
 				
 				if (r == true)
 				{
 					var cloud = new Cloud();
-					$("#loading").append('Loading...');
+					$("#loading").append('Ielade...');
 					cloud.deleteByID("settings", setting_id, deleteSuccess,deleteFailed);
 				}
 				
@@ -151,7 +151,7 @@
 			
 			function deleteSuccess()
 			{
-				alert("Success!");
+				alert("Ieraksts tika veiksmīgi izdzēsts!");
 				$("#loading").empty();
 				writeAll();
 			
@@ -159,7 +159,7 @@
 			}
 			function deleteFailed()
 			{
-				alert("Failed!");
+				alert("Neizdevās nodibināt savienojumu ar internetu!");
 				$("#loading").empty();
 			}
 			
@@ -190,11 +190,11 @@
 			{
 				if (!settingsList)
 				{
-					;
+					
 				}
 				else
 				{
-					alert("Clicked 1");
+					//alert("Clicked 1");
 					writeProducts(settingsList)
 				}
 			}
@@ -208,7 +208,7 @@
 				}
 				else
 				{
-					alert("Clicked 2");
+					
 					writeStatuss(settingsList);
 				}
 			}
