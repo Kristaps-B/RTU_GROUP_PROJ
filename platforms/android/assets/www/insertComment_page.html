@@ -185,8 +185,8 @@
 			
 			function insertSuccess()
 			{
-				$("#loading").empty();
-				alert("Success");
+				$("#loading").empty().append("<b>Komentārs tika veiksmīgi pievienots!</b>");
+				//alert("Success");
 				
 				$("#insert_form").empty();
 				$("#back").append('<br><a href="#" id="back_b" data-rel="back" class="ui-btn">Atpakaļ</a>');

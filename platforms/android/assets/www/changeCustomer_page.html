@@ -51,6 +51,15 @@
 				}
 			);
 			
+			function addNameToFooter()
+			{
+				var uname = window.localStorage.getItem("uname");
+				
+				//Add to footer
+				$("#foot").append(uname);
+				$("#foot").trigger('create');
+			}
+			
 			
 			function onDeviceReady()
 			{
@@ -60,8 +69,14 @@
 				flat_id = flat_id.replace("flat_id=","");
 				
 				//alert("flat_id");
+				
+				addNameToFooter();
+				loadAll();
+			}
 			
-				$("#loading").append('Loading...');
+			function loadAll()
+			{
+				$("#loading").append('Ielade...');
 				
 				var cloud = new Cloud();
 				cloud.findAll("flats",success,failed);
@@ -82,10 +97,21 @@
 						var h_nmb = (response[i].num).split("-")[0];
 						var f_nmb = (response[i].num).split("-")[1];
 						
-						htmlstring += '<li data-icon="home">' + '<a href="#" '+
-						' onclick="changeClicked(\''+response[i]._id.$oid+'\',\''+response[i].street_name+'\')">'+
-						response[i].street_name + ' '+ h_nmb+' - '+ f_nmb
-						'</a></li>';
+						
+						if (f_nmb)
+						{
+							htmlstring += '<li data-icon="home">' + '<a href="#" '+
+							' onclick="changeClicked(\''+response[i]._id.$oid+'\',\''+response[i].street_name+'\')">'+
+							response[i].street_name + ' '+ h_nmb+' - '+ f_nmb+
+							'</a></li>';
+						}
+						else
+						{
+							htmlstring += '<li data-icon="home">' + '<a href="#" '+
+							' onclick="changeClicked(\''+response[i]._id.$oid+'\',\''+response[i].street_name+'\')">'+
+							response[i].street_name + ' '+ h_nmb+
+							'</a></li>';
+						}
 					}
 				}
 				
@@ -100,27 +126,30 @@
 				
 				flatId_this = flatId;
 				street_this =street;
-				var r = confirm("Vai velies mainit klientu?");
+				var r = confirm("Vai velies nomainit klientu?");
 				
 				if (r == true)
 				{
 					var cloud = new Cloud();
+					$("#back").empty();
+					$("#loading").empty().append('Ielade 1...');
 					var jsnDoc = '{"flat_id":"'+flat_id+'XXX","street_name":"'+street+'"}';
 					cloud.updateByKey("customers","flat_id",flat_id,jsnDoc,change0Success,change0Failed);
 					
 					$("#list").empty();
-					$("#loading").append('Loading...');
+					
 				}
 				
 			}
 			
 			function change0Success()
 			{
-				alert("0....!");
+				//alert("0....!");
 				
 				var flatId= flatId_this;
 				var street = street_this;
 				
+				$("#loading").empty().append('Ielade 2...');
 				var cloud = new Cloud();
 				var jsnDoc = '{"flat_id":"'+flat_id+'","street_name":"'+street+'"}';
 				cloud.updateByKey("customers","flat_id",flatId,jsnDoc,change1Success,change1Failed);
@@ -129,16 +158,17 @@
 			
 			function change0Failed()
 			{
-				alert("Change 0 Failed!");
+				alert("Neizdevās nodibināt savienojumu ar internetu!");
 			}
 			
 			function change1Success()
 			{
-				alert("1...!");
+				//alert("1...!");
 				
 				var flatId= flatId_this;
 				var street = street_this;
 				
+				$("#loading").empty().append('Ielade 3...');
 				var cloud = new Cloud();
 				var jsnDoc = '{"flat_id":"'+flatId+'","street_name":"'+street+'"}';
 				cloud.updateByKey("customers","flat_id",flat_id+"XXX",jsnDoc,change2Success,change2Failed);
@@ -147,19 +177,20 @@
 			
 			function change1Failed()
 			{
-				alert("Change 1 Failed!");
+				alert("Neizdevās nodibināt savienojumu ar internetu!");
 			}
 			
 			function change2Success()
 			{
 				alert("Customers changed!");
 				$("#loading").empty();
+				$("#back").append("Klienti tika veiksmīgi apmainīti");
 				$("#back").append('<br><a href="#" id="back_b" data-rel="back" class="ui-btn">Atpakaļ</a>');
 			}
 			
 			function change2Failed(err)
 			{
-				alert("Change 2 Failed!");
+				alert("Neizdevās nodibināt savienojumu ar internetu!");
 			}
 			
 			function failed(err)
@@ -169,7 +200,7 @@
 				$("#loading").empty();
 				if (err == 2601)
 				{
-					alert("NOTHING IN!");
+					alert("Klientu nav!");
 				}
 				else
 				{
@@ -183,15 +214,17 @@
 		
 		
 			<div data-role = "header" data-theme="b" class="center-wrapper" data-position="fixed">
-				Nomainīt klientu
+				KLIENTA MAIŅA
 			</div>
 			<div data-role="content" id="cont">
 				<div id="loading">
 				
 				</div>
 				
-				<div id="back">
 				
+				
+				<div id="back">
+					<b>Izvelāties apmaiņas dzīvokli</b>
 				</div>
 				
 				<ul data-role="listview" id = "list" data-inset="true">
@@ -200,8 +233,9 @@
 					
 				
 			</div>
-			<div data-role="footer" data-theme="b" class="center-wrapper" data-position="fixed">
-				MADE BY KRISTAPS
+			<div data-role="footer" id="foot" data-theme="b"  class="ui-bar" data-position="fixed">
+				<a href="#" id="back_b" data-rel="back" data-role="button" data-icon="back"></a>
+				<a href="main_page.html" id="back_b" data-role="button" data-icon="home"></a>
 			</div>
 		</div>
     </body>
