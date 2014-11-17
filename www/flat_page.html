@@ -86,7 +86,7 @@
 				
 				addNameToFooter()
 				
-				$("#text").empty().append("<b>"+street+" iela "+house+" - "+flat+"</b>");
+				$("#text_1").empty().append("<b>"+street+" iela "+house+" - "+flat+"</b>");
 				
 				customer();
 				
@@ -184,13 +184,13 @@
 					'data-role="button"   data-transition="slide">Pievienot Komentaru</a>'
 				).listview("refresh");
 				
-				$("#text").append('<a href="purchase_page.html?cust_id='+cust_id+'"'+
-				'id="toPurch" data-transition="slide" class="ui-btn">Pievienot Pirkumu</a>');
+				$("#text").append('<li><a href="purchase_page.html?cust_id='+cust_id+'"'+
+				'id="toPurch" data-transition="slide" class="ui-btn">Pievienot Pirkumu</a></li>');
 				$("#toPurch").trigger('create');
 				$('#toPurch').buttonMarkup({ icon: "shop" });
 				
-				$("#text").append('<a href="changeCustomer_page.html?flat_id='+flat_id+'"'+
-				' id="toChange" data-transition="slide" class="ui-btn">Nomainīt Klientu</a>');
+				$("#text").append('<li><a href="changeCustomer_page.html?flat_id='+flat_id+'"'+
+				' id="toChange" data-transition="slide" class="ui-btn">Nomainīt Klientu</a></li>');
 				$("#toChange").trigger('create');
 				$('#toChange').buttonMarkup({ icon: "gear" });
 				
@@ -216,13 +216,13 @@
 					'data-role="button"   data-transition="slide">Pievienot Komentaru</a>'
 				).listview("refresh");
 				
-				$("#text").append('<a href="purchase_page.html?cust_id='+cust_id+'"'+
-				'id="toPurch" data-transition="slide" class="ui-btn">Pievienot Pirkumu</a>');
+				$("#text").append('<li><a href="purchase_page.html?cust_id='+cust_id+'"'+
+				'id="toPurch" data-transition="slide" class="ui-btn">Pievienot Pirkumu</a></li>');
 				$("#toPurch").trigger('create');
 				$('#toPurch').buttonMarkup({ icon: "shop" });
 				
-				$("#text").append('<a href="changeCustomer_page.html?flat_id='+flat_id+'"'+
-				'id="toChange" data-transition="slide" class="ui-btn">Nomainīt Klientu</a>');
+				$("#text").append('<li><a href="changeCustomer_page.html?flat_id='+flat_id+'"'+
+				'id="toChange" data-transition="slide" class="ui-btn">Nomainīt Klientu</a></li>');
 				$("#toChange").trigger('create');
 				$('#toChange').buttonMarkup({ icon: "gear" });
 				
@@ -242,9 +242,13 @@
 				
 				</div>
 				
-				<div id = "text">
+				<div id = "text_1">
 					
 				</div>
+				
+				<ul data-role="listview" id = "text" data-inset="true">
+					
+				</ul>	
 				
 				<div id ="comments" data-inset="true">
 					

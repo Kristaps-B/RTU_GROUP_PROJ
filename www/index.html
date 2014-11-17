@@ -93,9 +93,18 @@
 						{
 							
 							var opc_v = response[i].opc_v;
-							if (opc_v == "produkts")
+							//if (opc_v == "produkts")
 							{
-								var val = response[i].kultura+"-"+response[i].suga+"-"+response[i].cena_kg+"(EUR/KG) "+response[i].daudzums+"(KG)";
+								var val;
+								if (opc_v == "produkts")
+								{
+									val = response[i].kultura+"-"+response[i].suga+"-"+response[i].cena_kg+"(eur/kg)-"+response[i].daudzums;
+								}
+								else if (opc_v == "statuss")
+								{
+									val = response[i].statuss;
+								}
+								
 								//alert(val);
 								
 								var sql = "INSERT INTO SETTINGS (opc_v, val) VALUES (?, ?)";

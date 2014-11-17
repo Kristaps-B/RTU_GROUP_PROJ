@@ -49,8 +49,23 @@
 			);
 			
 			
+			function addNameToFooter()
+			{
+				var uname = window.localStorage.getItem("uname");
+				
+				//Add to footer
+				$("#foot").append(uname);
+				$("#foot").trigger('create');
+			}
 			
-			
+			/*
+				<option value="Nebija majas">Nebija majas</option>
+				<option value="Pasutija talak">Pasutija 4 majas talak</option>
+				<option value="Nebija naudas">Nebija naudas</option>
+				<option value="Draudeja">Draudeja</option>
+				<option value="Nopirka produktus">Nopirka produktus</option>
+				<option value="Gribeja iepirkties citreiz">Gribeja iepirkties citreiz</option>
+			*/
 			
 			function onDeviceReady()
 			{
@@ -61,9 +76,76 @@
 				cust_id = url.split("?")[1];
 				cust_id = cust_id.replace("cust_id=","");
 				
+				addNameToFooter();
+				
 				//Appending izveles!
-				$("#stat").append('<option value="Pievienots dinamiski">Pievienots dinamiski</option>');
-				$("#stat").trigger('create');
+				/*
+					$("#stat").append('<option value="Pievienots dinamiski">Pievienots dinamiski</option>');
+					$("#stat").trigger('create');
+				*/
+				loadStatuss();
+			}
+			
+			function loadStatuss()
+			{
+				db = window.openDatabase("Database","1.0", "DB", 2*1024*1024);
+				db.transaction(getStatuss, errorCB);
+			}
+			
+			function successCB()
+			{
+				//alert("Local DB SUCCESS!");
+			}
+			
+			function getStatuss(tx)
+			{
+				//alert("Getting Products!");
+				
+				tx.executeSql('SELECT * FROM SETTINGS', [], function(tx, result)
+				{
+					var len = result.rows.length;
+					//alert("Garums: "+len);
+					
+					for (var i=0;i<len;i++)
+					{
+						if (result.rows.item(i).opc_v == "statuss")
+						{
+							var val =result.rows.item(i).val;
+							//alert(val);
+							
+							
+							$("#stat").append('<option value="'+val+'">'+val+'</option>');
+						}
+					}
+					
+					$('#stat').selectmenu('refresh', true);
+					$("#stat").trigger('create');
+				}
+				,errorCB);
+			}
+			
+			function errorCB(err)
+			{
+				alert("Lokālās datubāzes kļūda! "+err.code+" "+err.message);
+			}
+			
+			
+			function parbaude(comment, konkurents)
+			{
+				
+			
+				if (comment.length >40)
+				{
+					alert("Komentārs ir par garu!");
+					return false;
+				}
+				if (konkurents.length >20)
+				{
+					alert("Konkurenta nosaukums ir par garu!");
+					return false;
+				}
+				
+				return true;
 			}
 			
 			function submitForm()
@@ -84,12 +166,16 @@
 				var comment = $("[name='komentars']").val();
 				//alert(comment);
 				
-				var json = '{"cust_id":"'+cust_id+'","uname":"'+uname+'","status":"'+statuss+'","score":"'+novert+'","comment":"'+comment+'"}';
+				var konkurents = $("[name='konkurents']").val();
+				
+				if (parbaude(comment, konkurents) == false) return false;
+				
+				var json = '{"cust_id":"'+cust_id+'","uname":"'+uname+'","status":"'+statuss+'","score":"'+novert+'","comment":"'+comment+'","konkurents":"'+konkurents+'"}';
 				var cloud = new Cloud();
 				
 				$("#subm").button('disable');	
 				
-				$("#loading").append('Loading...');
+				$("#loading").append('Ielade...');
 				cloud.insertNew("comments", json, insertSuccess,insertFail);
 				
 				
@@ -99,8 +185,8 @@
 			
 			function insertSuccess()
 			{
-				$("#loading").empty();
-				alert("Success");
+				$("#loading").empty().append("<b>Komentārs tika veiksmīgi pievienots!</b>");
+				//alert("Success");
 				
 				$("#insert_form").empty();
 				$("#back").append('<br><a href="#" id="back_b" data-rel="back" class="ui-btn">Atpakaļ</a>');
@@ -111,7 +197,7 @@
 			function insertFail(error)
 			{
 				$("#loading").empty();
-				alert("Failed!");
+				alert("Neizdevās nodibināt savienojumu ar internetu!");
 				
 				var storageObj = JSON.parse(error);  
 				var appErrorCode = storageObj.app42Fault.appErrorCode;
@@ -127,7 +213,7 @@
 		
 		
 			<div data-role = "header" id = "head" data-theme="b" class="center-wrapper" data-position="fixed">
-				Komentaru lapa
+				KOMENTĀRS
 			</div>
 			<div data-role="content" id="cont">
 			
@@ -140,17 +226,12 @@
 				</div>
 				
 				<form method = "POST" id="insert_form"  onSubmit="return submitForm()">
-					<label for="stat">Statuss:</label>
+					<label for="stat"><b>Statuss:</b></label>
 					<select name ="statuss" id="stat">
-						<option value="Nebija majas">Nebija majas</option>
-						<option value="Pasutija talak">Pasutija 4 majas talak</option>
-						<option value="Nebija naudas">Nebija naudas</option>
-						<option value="Draudeja">Draudeja</option>
-						<option value="Nopirka produktus">Nopirka produktus</option>
-						<option value="Gribeja iepirkties citreiz">Gribeja iepirkties citreiz</option>
+						
 					</select>
 					
-					<label for="nov">Novertejums:</label>
+					<label for="nov"><b>Novertējums:</b></label>
 					<select name ="novertejums" id="nov">
 						<option value="5">5</option>
 						<option value="4">4</option>
@@ -161,9 +242,10 @@
 					</select>
 					
 						
-					<label for="comm">Komentārs:</label>
+					<label for="comm"><b>Komentārs:</b></label>
 					<textarea name="komentars" id="comm">              </textarea>
-
+					
+					<input name="konkurents" type="text" placeholder="konkurents">
 					
 					<input type="submit" id="subm" value="submit">
 				</form>
@@ -180,8 +262,9 @@
 					
 				
 			</div>
-			<div data-role="footer" data-theme="b" class="center-wrapper" data-position="fixed">
-				MADE BY KRISTAPS
+			<div data-role="footer" id="foot" data-theme="b"  class="ui-bar" data-position="fixed">
+				<a href="#" id="back_b" data-rel="back" data-role="button" data-icon="back"></a>
+				<a href="main_page.html" id="back_b" data-role="button" data-icon="home"></a>
 			</div>
 		</div>
     </body>

@@ -103,19 +103,21 @@
 				tx.executeSql('SELECT * FROM SETTINGS', [], function(tx, result)
 				{
 					var len = result.rows.length;
-					alert("Garums: "+len);
+					//alert("Garums: "+len);
 					
 					for (var i=0;i<len;i++)
 					{
-						
-						var val =result.rows.item(i).val;
-						//alert(val);
-						
-						
-						$("#prod").append('<option value="'+val+'">'+val+'</option>');
-						$('#prod').selectmenu('refresh', true);
+						if (result.rows.item(i).opc_v == "produkts")
+						{
+							var val =result.rows.item(i).val;
+							//alert(val);
+							
+							
+							$("#prod").append('<option value="'+val+'">'+val+'</option>');
+						}
 					}
 					
+					$('#prod').selectmenu('refresh', true);
 					$("#prod").trigger('create');
 				}
 				,errorCB);
@@ -136,18 +138,27 @@
 				
 				var uname = window.localStorage.getItem("uname");
 				
-				var price_kg = prod.split("-")[1];
+				var price_kg = prod.split("-")[2];
 				price_kg = price_kg.replace("(eur/kg)","");
 				//alert("Cena KG " +price_kg);
 				
-				var product = prod.split("-")[0];
+				
+				
+				var product = prod.split("-")[0]+" "+prod.split("-")[1];
 				
 				var price = parseFloat(amount) * parseFloat(price_kg);
+				price = price.toFixed(2);
 				//var price = 0;
+				
 				
 				//alert("Pirkuma cena - "+price +" (EUR)");
 				
+				var r = confirm("Vai velaties izveidot pirkumu " +product+ " par "+price+" (EUR)");
 				//alert("Pati pievienosana tiks uzstaisita nedaudz velak!");
+				if (r==false)
+				{
+					return false;
+				}
 				
 				var json = '{"cust_id":"'+cust_id+'","product":"'+product+'","amount":"'+amount+'","price_kg":"'+price_kg+'","price":"'+price+'","uname":"'+uname+'"}';
 				var cloud = new Cloud();
