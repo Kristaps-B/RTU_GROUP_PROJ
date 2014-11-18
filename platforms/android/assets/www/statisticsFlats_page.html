@@ -130,7 +130,18 @@
 						if (flatsList[j]._id.$oid === customerList[i].flat_id)
 						{
 							//alert("FLAT: "+flatsList[j].street_name+ " customer "+customerList[i]._id.$oid);
-							val =  flatsList[j].street_name+" "+flatsList[j].num+"/"+customerList[i]._id.$oid;
+							var h_nmb = (flatsList[j].num).split("-")[0];
+							var f_nmb = (flatsList[j].num).split("-")[1];
+							
+							if (f_nmb)
+							{
+								val =  flatsList[j].street_name+" "+flatsList[j].num+"/"+customerList[i]._id.$oid;
+							}
+							else
+							{
+								val =  flatsList[j].street_name+" "+h_nmb+"/"+customerList[i]._id.$oid;
+							}
+							
 							streetsList.push(val);
 							
 						}
