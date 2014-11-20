@@ -118,6 +118,10 @@
 				
 				var response = userList;
 				
+				var kopa_count=0;
+				var kopa_kg=0;
+				var kopa_eu=0;
+				
 				var htmlstring = "";
 				for (i=0; i<response.length;i++)
 				{
@@ -134,7 +138,9 @@
 						}
 					}
 					
-				
+					kopa_count+=count;
+					kopa_kg+=summ;
+					kopa_eu+=price;
 					
 					{
 						htmlstring += '<tr>'+
@@ -146,6 +152,13 @@
 					}
 				}
 				//alert(htmlstring);
+				
+				htmlstring += '<tr>'+
+						'<td>'+'KOPĀ'+'</td>'+
+						'<td>'+kopa_count+'</td>'+
+						'<td>'+kopa_kg+'</td>'+
+						'<td>'+kopa_eu+'</td>'
+					+'</tr>';
 				
 				$("#table_cont").empty().append(htmlstring);
 				$("#table").table("refresh");

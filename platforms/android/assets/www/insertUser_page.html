@@ -127,14 +127,14 @@
 					{
 						success:function(object)
 						{
-							alert("User "+un+" created!");
+							alert("Darbinieks "+un+" tika veiksmīgi izveidots!");
 							$("#insert_form").remove();
 							$("#cont").append("Darbinieks "+un+" tika veiksmigi izveidots!");
 							
 							$("#cont").append('<br><a href="#" data-rel="back" id="btnBack" class="ui-btn">Atpakaļ</a>');
 							$('#btnBack').buttonMarkup({ icon: "back" });
 							
-							$("#loading").empty();
+							$("#loading").empty().append("Darbinieks "+un+" tika veiksmīgi izveidots!");
 							
 						},
 						error:function(error)

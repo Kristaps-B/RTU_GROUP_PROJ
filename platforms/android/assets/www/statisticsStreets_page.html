@@ -182,6 +182,10 @@
 				
 				var response = streetsList;
 				
+				var kopa_count=0;
+				var kopa_kg=0;
+				var kopa_eu=0;
+				
 				var htmlstring = "";
 				for (var k=0;k<streetOneList.length;k++)
 				{
@@ -220,6 +224,10 @@
 					}
 					
 					
+					kopa_count+=count;
+					kopa_kg+=summ;
+					kopa_eu+=price;
+					
 					{
 						htmlstring += '<tr>'+
 							'<td>'+street_name+'</td>'+
@@ -232,6 +240,13 @@
 					
 				}
 				//alert(htmlstring);
+				
+				htmlstring += '<tr>'+
+						'<td>'+'KOPĀ'+'</td>'+
+						'<td>'+kopa_count+'</td>'+
+						'<td>'+kopa_kg+'</td>'+
+						'<td>'+kopa_eu+'</td>'
+					+'</tr>';
 				
 				
 				$("#table_cont").empty().append(htmlstring);

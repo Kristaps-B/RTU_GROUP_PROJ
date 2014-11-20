@@ -41,6 +41,8 @@
 			var customerList;
 			var commentsList;
 			
+			var endList;
+			
 			
 			function init()
 			{
@@ -173,20 +175,64 @@
 				
 			}
 			
-			function success(response)
+			function writeList(response)
 			{
 				$("#loading").empty();
 				//alert("SUCCESS");
-				
-				
-				
 				var htmlstring = "";
+				
+				//alert("write "+response[0]);
+				
+				for (var i=0;i<response.length;i++)
+				{
+					
+					var id = response[i].split("/")[0];
+					var street = response[i].split("/")[1];
+					var h_nmb = response[i].split("/")[2];
+					var f_nmb = response[i].split("/")[3];
+					var avScore = response[i].split("/")[4];
+					
+					
+				
+					if (f_nmb)
+					{
+						htmlstring += '<li data-icon="home">' + '<a href="flat_page.html?id='+id+'?street='+
+						street+'?house='+h_nmb+'?flat='+f_nmb+'" '+
+						'data-role="button" data-transition="slide">'+
+						street.replace("_"," ") + ' '+ h_nmb+' - '+ f_nmb+
+						' <span class="ui-li-count">'+avScore+'</span> </a></li>';
+					}
+					else
+					{
+						htmlstring += '<li data-icon="home">' + '<a href="flat_page.html?id='+id+'?street='+
+						street+'?house='+h_nmb+'?flat='+f_nmb+'" '+
+						'data-role="button" data-transition="slide">'+
+						street.replace("_"," ") + ' '+ h_nmb+
+						' <span class="ui-li-count">'+avScore+'</span> </a></li>';
+					}
+					
+				}
+				
+				
+				$("#list").empty().append(htmlstring);
+				
+				$("#list").append('<li data-icon="plus"><a href='+
+					'"insertFlat_page.html?street_id='+street_id+'?street_name='+street_name.replace(" ","_")+
+					'?h_n='+h_n+'?h_u='+h_u+'?f_n='+f_n+'?f_u='+f_u+'"'+
+					'data-role="button"   data-transition="slide">Pievienot Jaunu</a>'
+				).listview("refresh");
+				
+			}
+			
+			function success(response)
+			{
+				//CreateList
+				endList=[];
+				
 				for (i=0; i<response.length;i++)
 				{
 				
 					var avScore ="NA";
-					//Mekle novertejumu
-					//alert(response[i].street_name+" "+response[i].num);
 					
 					for (j=0;j<customerList.length;j++)
 					{
@@ -224,35 +270,120 @@
 						var h_nmb = (response[i].num).split("-")[0];
 						var f_nmb = (response[i].num).split("-")[1];
 						
+						var rez;
 						
-						if (f_nmb)
-						{
-							htmlstring += '<li data-icon="home">' + '<a href="flat_page.html?id='+response[i]._id.$oid+'?street='+
-							response[i].street_name.replace(" ","_")+'?house='+h_nmb+'?flat='+f_nmb+'" '+
-							'data-role="button" data-transition="slide">'+
-							response[i].street_name + ' '+ h_nmb+' - '+ f_nmb+
-							' <span class="ui-li-count">'+avScore+'</span> </a></li>';
-						}
-						else
-						{
-							htmlstring += '<li data-icon="home">' + '<a href="flat_page.html?id='+response[i]._id.$oid+'?street='+
-							response[i].street_name.replace(" ","_")+'?house='+h_nmb+'?flat='+f_nmb+'" '+
-							'data-role="button" data-transition="slide">'+
-							response[i].street_name + ' '+ h_nmb+
-							' <span class="ui-li-count">'+avScore+'</span> </a></li>';
-						}
+						rez = response[i]._id.$oid+"/"+response[i].street_name.replace(" ","_")+"/"+
+						h_nmb+"/"+f_nmb+"/"+avScore;
+						
+						//alert(rez);
+						
+						endList.push(rez);
 						
 					}
 				}
 				
-				$("#list").empty().append(htmlstring);
+				//endList = selectionSortStreet(endList);
 				
-				$("#list").append('<li data-icon="plus"><a href='+
-					'"insertFlat_page.html?street_id='+street_id+'?street_name='+street_name.replace(" ","_")+
-					'?h_n='+h_n+'?h_u='+h_u+'?f_n='+f_n+'?f_u='+f_u+'"'+
-					'data-role="button"   data-transition="slide">Pievienot Jaunu</a>'
-				).listview("refresh");
+				writeList(endList);
 				
+				
+			}
+			
+			function selectionSortStreet(items)
+			{
+
+				var len = items.length, min;
+
+				for (var i=0; i < len; i++){
+
+					//set minimum to this position
+					min = i;
+
+					//check the rest of the array to see if anything is smaller
+					for (var j=i+1; j < len; j++){
+						var a = items[j].split("/")[2];
+						var a1 = items[j].split("/")[3];
+						var b = items[min].split("/")[2];
+						var b1 = items[min].split("/")[3];
+						
+						if (!a1)
+						{
+							a1=0;
+						}
+						if (!b1)
+						{
+							b1=0;
+						}
+						
+						a = parseFloat(a)+parseFloat(a1)/100;
+						b = parseFloat(b)+parseFloat(b1)/100;
+						
+						if (a < b){
+							min = j;
+						}
+					}
+
+					//if the minimum isn't in the position, swap it
+					if (i != min){
+						swap(items, i, min);
+					}
+				}
+
+				return items;
+			}
+			
+			
+			function selectionSortAvScore(items)
+			{
+
+				var len = items.length, min;
+
+				for (var i=0; i < len; i++){
+
+					//set minimum to this position
+					min = i;
+
+					//check the rest of the array to see if anything is smaller
+					for (var j=i+1; j < len; j++){
+						var a = items[j].split("/")[4];
+						var b = items[min].split("/")[4];
+						
+						if (a=="NA")
+						{
+							a = -1;
+						}
+						else
+						{
+							a= parseFloat(a);
+						}
+						
+						if (b=="NA")
+						{
+							b=-1;
+						}
+						else
+						{
+							b= parseFloat(b);
+						}
+						
+						if (a > b){
+							min = j;
+						}
+					}
+
+					//if the minimum isn't in the position, swap it
+					if (i != min){
+						swap(items, i, min);
+					}
+				}
+
+				return items;
+			}
+			
+			function swap(items, firstIndex, secondIndex){
+				var temp = items[firstIndex];
+				items[firstIndex] = items[secondIndex];
+				items[secondIndex] = temp;
 			}
 			
 			function failed(appErrorCode)
@@ -285,6 +416,22 @@
 				$('#reload_b').buttonMarkup({ icon: "refresh" });
 			}
 			
+			function click_1()
+			{
+				$("#list").empty();
+				endList = selectionSortStreet(endList);
+				
+				writeList(endList);
+			}
+			
+			function click_2()
+			{
+				$("#list").empty();
+				endList = selectionSortAvScore(endList);
+				
+				writeList(endList);
+			}
+			
 		
 			
 		</script>
@@ -302,6 +449,12 @@
 				<div id = "text">
 				
 				</div>
+				<div data-role="navbar">
+				<ul>
+					<li><a href="#" class="ui-btn-active ui-state-persist" onclick ="click_1()">Ielas</a></li>
+					<li><a href="#"  onclick ="click_2()">Vērtējums</a></li>
+				</ul>
+			</div>
 				<br>
 				
 				<form class="ui-filterable">

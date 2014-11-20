@@ -228,7 +228,10 @@
 					<b>Izvelāties apmaiņas dzīvokli</b>
 				</div>
 				
-				<ul data-role="listview" id = "list" data-inset="true">
+				<form class="ui-filterable">
+					<input id="filterBasic-input" data-type="search">
+				</form>
+				<ul data-role="listview" id = "list" data-inset="true" data-filter="true" data-input="#filterBasic-input">
 					
 				</ul>	
 					
