@@ -54,6 +54,7 @@ C:\Android_apps\kartupelu_parvaldnieks_2014\kartupelu_parvaldnieks_2014\platform
 C:\Android_apps\kartupelu_parvaldnieks_2014\kartupelu_parvaldnieks_2014\platforms\android\assets\www\main_page.html \
 C:\Android_apps\kartupelu_parvaldnieks_2014\kartupelu_parvaldnieks_2014\platforms\android\assets\www\purchase_page.html \
 C:\Android_apps\kartupelu_parvaldnieks_2014\kartupelu_parvaldnieks_2014\platforms\android\assets\www\settings_page.html \
+C:\Android_apps\kartupelu_parvaldnieks_2014\kartupelu_parvaldnieks_2014\platforms\android\assets\www\statisticsComments_page.html \
 C:\Android_apps\kartupelu_parvaldnieks_2014\kartupelu_parvaldnieks_2014\platforms\android\assets\www\statisticsFlats_page.html \
 C:\Android_apps\kartupelu_parvaldnieks_2014\kartupelu_parvaldnieks_2014\platforms\android\assets\www\statisticsStreets_page.html \
 C:\Android_apps\kartupelu_parvaldnieks_2014\kartupelu_parvaldnieks_2014\platforms\android\assets\www\statisticsWorkers_page.html \

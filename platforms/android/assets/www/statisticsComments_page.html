@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="msapplication-tap-highlight" content="no" />
+        <meta name="viewport" content="user-scalable=yes, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+        <title>RTU APP (STATISTICS COMMENTS)</title>
+		
+		<link rel="stylesheet" type="text/css" href="css/themes/default/jquery.mobile-1.4.3.min.css"/>
+		<link rel="stylesheet" type="text/css" href="css/main.css" />
+		
+		<script type="text/javascript" src="js/jquery.js"></script>
+		<script type="text/javascript" src="js/jquery.mobile-1.4.3.js"></script>
+		<script type="text/javascript" src="cordova.js"></script>
+		<script type="text/javascript" src="js/cloud.js"></script>
+		
+		
+		
+		<script type="text/javascript">
+			$(document).on("pagecreate","#jobs_page",function(){
+				document.addEventListener("deviceready",onDeviceReady,false);
+				writeAll();
+			});
+		</script>
+	
+		
+    </head>
+    <body onload = "init()">
+        <div data-role ="page" id = "jobs_page" >
+			
+			<script type="text/javascript" src="js/App42-all-2.7.2.min.js"></script>
+			
+			<script type = "text/javascript">
+			
+			var commentsList;
+			var customersList;
+			var flatsList;
+			
+			function init()
+			{
+				
+				//document.addEventListener("deviceready",onDeviceReady,false);
+				
+			}
+			
+			function addNameToFooter()
+			{
+				var uname = window.localStorage.getItem("uname");
+				
+				//Add to footer
+				$("#foot").append(uname);
+				$("#foot").trigger('create');
+			}
+			
+			
+			$(":mobile-pagecontainer").on("pagecontainerchange", function(event, ui)
+				{
+					//alert("Page container change (Login Page)!");
+					document.addEventListener("deviceready",onDeviceReady,false);
+					$(":mobile-pagecontainer").unbind();
+				}
+			);
+			
+
+			
+			function onDeviceReady()
+			{
+				//Device ready
+				addNameToFooter();
+				loadAll();
+			}
+			
+			function loadAll()
+			{
+				//Ielade visu
+				
+				
+				$("#loading").empty().append('Ielade komentarus...');
+				var cloud = new Cloud();
+				cloud.findAll("comments",commentsSuccess,commentsFailed);
+			}
+			
+			function commentsSuccess(rez)
+			{
+				$("#loading").empty().append('Ielade klientus..');
+				commentsList = rez;
+				
+				var cloud = new Cloud();
+				cloud.findAll("customers",customersSuccess,customersFailed);
+			}
+			
+			function commentsFailed()
+			{
+				alert("Neizdevās nodibināt savienojumu ar internetu!");
+				$("#loading").empty();
+				addReload();
+			}
+			
+			function customersSuccess(rez)
+			{
+				$("#loading").empty().append('Ielade dzīvokļus..');
+				customersList = rez;
+				
+				var cloud = new Cloud();
+				cloud.findAll("flats",flatsSuccess,flatsFailed);
+				
+				//purchList = rez;
+				//createTable();
+			}
+			
+			function customersFailed()
+			{
+				alert("Neizdevās nodibināt savienojumu ar internetu!");
+				$("#loading").empty();
+				addReload();
+			}
+			
+			function flatsSuccess(rez)
+			{
+				$("#loading").empty();
+				flatsList = rez;
+				createTable();
+			}
+			
+			function flatsFailed()
+			{
+				alert("Neizdevās nodibināt savienojumu ar internetu!");
+				$("#loading").empty();
+				addReload();
+			}
+			
+			function createTable()
+			{
+				//Creating Table
+				$("#loading").empty();
+				
+				var response = commentsList;
+				
+				var htmlstring = "";
+				for (var i=0; i<response.length;i++)
+				{
+					var darb;
+					var dziv;
+					var nov;
+					var stat;
+					var kom;
+					var konk;
+					
+					for (var j=0;j<customersList.length;j++)
+					{
+						if (response[i].cust_id == customersList[j]._id.$oid)
+						{
+							for (var k=0; k<flatsList.length;k++)
+							{
+								if (customersList[j].flat_id == flatsList[k]._id.$oid)
+								{
+									var nmb = flatsList[k].num;
+									if (!nmb.split("-")[1])
+									{
+										nmb = nmb.split("-")[0]
+									}
+									else
+									{
+										nmb = nmb;
+									}
+									
+									//alert("FOUND!");
+									darb = response[i].uname;
+									dziv = flatsList[k].street_name+" "+nmb;
+									nov = response[i].score;
+									stat = response[i].status;
+									kom = response[i].comment;
+									konk =  response[i].konkurents;
+									
+								}
+							}
+						}
+					}
+					
+					{
+						
+						htmlstring += '<tr>'+
+							'<td>'+dziv+'</td>'+
+							'<td>'+darb+'</td>'+
+							'<td>'+nov+'</td>'+
+							'<td>'+stat+'</td>'+
+							'<td>'+kom+'</td>'+
+							'<td>'+konk+'</td>'
+						+'</tr>';
+						
+					}
+				}
+				//alert(htmlstring);
+				
+				
+				$("#table_cont").empty().append(htmlstring);
+				$("#table").table("refresh");
+				
+			}
+			
+			function addReload()
+			{
+				$("#loading").append('<a href="#" id = "reload_b" data-role="button"   onclick="loadAll()">Pārladēt</a>');
+				$('#reload_b').buttonMarkup({ icon: "refresh" });
+			}
+			
+			
+		</script>
+		
+		
+			<div data-role = "header" data-theme="b" class="center-wrapper" data-position="fixed">
+				STATISTIKA KOMENTARI
+			</div>
+			<div data-role="content" id="cont">
+				
+				<div id="loading">
+				</div>
+				<br>
+				
+				<div id="table" data-role="table" data-mode="columntoggle" class = "ui-responsive ui-shadow table-stroke table-stripe">
+				<table id="myTable">
+					<thead>
+						<th data-priority>Dzīvoklis</th>
+						<th data-priority="1">darbinieks</th>
+						<th data-priority="2">novertējums</th>
+						<th data-priority="3">status</th>
+						<th data-priority="3">komentārs</th>
+						<th data-priority="3">konkurents</th>
+					</thead>
+					<tbody id="table_cont">
+						
+					</tbody>
+				</table>
+			</div>
+				
+				
+				<ul data-role="listview" id = "list" data-inset="true">
+					
+				</ul>
+
+			
+					
+				
+			</div>
+			<div data-role="footer" id="foot" data-theme="b"  class="ui-bar" data-position="fixed">
+					<a href="#" id="back_b" data-rel="back" data-role="button" data-icon="back"></a>
+					<a href="main_page.html" id="back_b" data-role="button" data-icon="home"></a>
+			</div>
+		</div>
+    </body>
+</html>
