@@ -85,15 +85,24 @@
 					$("#insert_form").append('<input name="house" type="text" placeholder="Iela">');
 					$("#insert_form").append('<input name="flat" type="number" placeholder="Dzīvoklis">');
 				}
-				//Ja viena iela un daļa no dzivokļiem
+				//Ja viena māja un daļa no dzivokļiem
 				if (h_n!="NULL" && h_u=="NULL" && f_n!="NULL" && f_u!="NULL")
 				{
-					$("#insert_form").append('<input name="house" type="number" placeholder="Māja">');
+					$("#insert_form").append('<input name="house" type="text" placeholder="Māja">');
 					$("#insert_form").append('Dzīvoklis:<input type="range" name="flat" id="flat" value="'+f_n+'" min="'+f_n+'" max="'+f_u+'" step="1" />');
+					
+					//Seit izslēgt
+					
 				}
 				
 				$("#insert_form").append('<input type="submit" id="subm" value="Apstiprināt">');
 				$("#insert_form").trigger('create');
+				
+				if (h_n!="NULL" && h_u=="NULL" && f_n!="NULL" && f_u!="NULL")
+				{
+					$("[name='house']").val(h_n);
+					$("[name='house']").textinput('disable');	
+				}
 			}
 			
 			function onDeviceReady()
@@ -199,7 +208,7 @@
 			
 			function insertClientSuccess()
 			{
-				$("#loading").empty();
+				$("#loading").empty().append("Jaunais dzīvoklis un tā klients tika veiksmīgi izveidots!");
 				
 				alert("Jaunais dzīvoklis un tā klients tika izveidots!");
 				
