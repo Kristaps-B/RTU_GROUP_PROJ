@@ -174,9 +174,9 @@
 									kom = response[i].comment;
 									konk =  response[i].konkurents;
 									
-									if (kom == "undefined")
+									if (!konk)
 									{
-										kom = "";
+										konk = "";
 									}
 								}
 							}
