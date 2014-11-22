@@ -125,33 +125,36 @@
 				var htmlstring = "";
 				for (i=0; i<response.length;i++)
 				{
-					var summ = 0;
-					var price = 0;
-					var count = 0;
-					var suga = response[i].kultura+" "+response[i].suga;
-					
-					for (j=0;j<purchList.length;j++)
+					if (response[i].opc_v=="produkts")
 					{
+						var summ = 0;
+						var price = 0;
+						var count = 0;
+						var suga = response[i].kultura+" "+response[i].suga;
 						
-						if (response[i].opc_v="produkts" && suga == purchList[j].uname)
+						for (j=0;j<purchList.length;j++)
 						{
-							summ += parseFloat(purchList[j].amount);
-							price += parseFloat(purchList[j].price);
-							count++;
+							
+							if (suga == purchList[j].product)
+							{
+								summ += parseFloat(purchList[j].amount);
+								price += parseFloat(purchList[j].price);
+								count++;
+							}
 						}
-					}
-					
-					kopa_count+=count;
-					kopa_kg+=summ;
-					kopa_eu+=price;
-					
-					{
-						htmlstring += '<tr>'+
-							'<td>'+suga+'</td>'+
-							'<td>'+count+'</td>'+
-							'<td>'+summ+'</td>'+
-							'<td>'+price+'</td>'
-						+'</tr>';
+						
+						kopa_count+=count;
+						kopa_kg+=summ;
+						kopa_eu+=price;
+						
+						{
+							htmlstring += '<tr>'+
+								'<td>'+suga+'</td>'+
+								'<td>'+count+'</td>'+
+								'<td>'+summ+'</td>'+
+								'<td>'+price+'</td>'
+							+'</tr>';
+						}
 					}
 				}
 				//alert(htmlstring);
@@ -190,7 +193,7 @@
 				<div id="table" data-role="table" data-mode="columntoggle" class = "ui-responsive ui-shadow table-stroke table-stripe">
 				<table id="myTable">
 					<thead>
-						<th data-priority>Darbinieks</th>
+						<th data-priority>Produkts</th>
 						<th data-priority="1">Pard. sk</th>
 						<th data-priority="2">Daudz. kg</th>
 						<th data-priority="3">Nauda. EU</th>
