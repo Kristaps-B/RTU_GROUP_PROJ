@@ -7,7 +7,7 @@ function Cloud(){
 
 Cloud.prototype.cloudAlert = function ()
 {
-	alert("Alert From Cloud!");
+	//alert("Alert From Cloud!");
 }
 
 //Find all By Key
@@ -90,8 +90,8 @@ Cloud.prototype.isUserInCloud = function (uname, password, loginSuccess, loginFa
 			}
 			else
 			{
-				alert("Makoòa kïûda: " +error);
-				loginFailed();
+				//alert("Makoòa kïûda: " +error);
+				loginFailed(error);
 			}
 		}    
 	}); 
@@ -152,10 +152,10 @@ Cloud.prototype.isIn = function(collName, q, isInSuccess, isInFailed)
 				
 				for (i=0; i<response.length;i++)
 				{
-					alert(response[i].street_name);
+					//alert(response[i].street_name);
 				}
 			
-				alert("Failed SUCC");
+				//alert("Failed SUCC");
 				isInFailed();
 			},
 			error:function(error)
@@ -169,7 +169,7 @@ Cloud.prototype.isIn = function(collName, q, isInSuccess, isInFailed)
 				}
 				else
 				{
-					alert("Failed FAIL");
+					//alert("Failed FAIL");
 					isInFailed();
 				}
 				
@@ -204,7 +204,7 @@ Cloud.prototype.findByID = function(collName, id, success, failed)
 	var collectionName = collName;
 	var docID = id;
 	
-	alert("Start");
+	//alert("Start");
 	
 	storageService.findDocumentById(dbName, collectionName, docID, 
 		{
@@ -212,7 +212,7 @@ Cloud.prototype.findByID = function(collName, id, success, failed)
 			{
 				var storageObj = JSON.parse(object);    
 				response = storageObj.app42.response.storage.jsonDoc;
-				alert("SUCC");
+				//alert("SUCC");
 				success(response);
 			},
 			error:function(error)
@@ -328,8 +328,8 @@ Cloud.prototype.deleteByKey = function(collName, k, v, success, failed)
 		},    
 		error: function(error) {  
 		
-			alert(error);
-			failed();
+			//alert(error);
+			failed(error);
 		}    
 	}); 			
 	

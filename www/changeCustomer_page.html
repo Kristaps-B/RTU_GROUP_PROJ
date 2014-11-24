@@ -92,7 +92,7 @@
 				var htmlstring = "";
 				for (i=0; i<response.length;i++)
 				{
-					
+					if (response[i]._id.$oid != flat_id)
 					{
 						var h_nmb = (response[i].num).split("-")[0];
 						var f_nmb = (response[i].num).split("-")[1];
@@ -184,7 +184,7 @@
 			{
 				//alert("Customers changed!");
 				$("#loading").empty().append("<b>Klienti tika veiksmīgi apmainīti</b>");
-				$("#back").append("Klienti tika veiksmīgi apmainīti");
+				
 				$("#back").append('<br><a href="#" id="back_b" data-rel="back" class="ui-btn">Atpakaļ</a>');
 				$('#back_b').buttonMarkup({ icon: "back" });
 			}

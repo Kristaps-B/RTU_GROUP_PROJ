@@ -86,7 +86,14 @@
 				
 				addNameToFooter()
 				
-				$("#text_1").empty().append("<b>"+street+" iela "+house+" - "+flat+"</b>");
+				if (flat)
+				{
+					$("#text_1").empty().append("<b>"+street+" iela "+house+" - "+flat+"</b>");
+				}
+				else
+				{
+					$("#text_1").empty().append("<b>"+street+" iela "+house+"</b>");
+				}
 				
 				customer();
 				
