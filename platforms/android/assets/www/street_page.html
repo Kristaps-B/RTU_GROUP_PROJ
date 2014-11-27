@@ -192,7 +192,19 @@
 					var f_nmb = response[i].split("/")[3];
 					var avScore = response[i].split("/")[4];
 					
+					if (h_n !="NULL" && h_u != "NULL")
+					{
+						if ( parseFloat(h_n)>parseFloat(h_nmb) || parseFloat(h_u)<parseFloat(h_nmb)) continue;
+					}
+					if (f_n !="NULL" && f_u != "NULL")
+					{
+						if ( parseFloat(f_n)>parseFloat(f_nmb) || parseFloat(f_u)<parseFloat(f_nmb)) continue;
+					}
 					
+					if (h_n !="NULL" && h_u == "NULL" && f_n !="NULL" && f_u != "NULL")
+					{
+						if ( parseFloat(f_n)>parseFloat(f_nmb) || parseFloat(f_u)<parseFloat(f_nmb) || parseFloat(h_n) != parseFloat(h_nmb)) continue;
+					}
 				
 					if (f_nmb)
 					{
